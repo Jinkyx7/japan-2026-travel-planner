@@ -63,6 +63,7 @@ export function PlaceMap({
             position: p.coordinates,
             title: `${food ? t("Food", "美食") : t("Stop", "地点")}: ${lang === "en" ? p.nameEn : p.nameZh}`,
             content: pin,
+            zIndex: food ? 100 : 1,
           });
           marker.addListener("click", () => setSelected(p.id));
           return marker;
