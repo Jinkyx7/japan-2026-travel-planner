@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,10 +21,13 @@ import { PlaceMap } from "../components/PlaceMap";
 import { FoodCards } from "./Places";
 import { itinerary } from "../data/itinerary";
 import { places } from "../data/places";
-import { trip, areaNames } from "../data/trip";
+import { areaNames } from "../data/trip";
 import { dateLabel } from "../lib/trip";
 import { readStored, writeStored } from "../services/storage";
 import { directionsUrl } from "../services/mapService";
+import { destinationPhotos } from "../data/destinationPhotos";
+import { PhotoCredit } from "../components/PhotoCredit";
+import { dayMapPlaces } from "../lib/dayMap";
 export function Itinerary() {
   const { t, lang } = useApp();
   const [region, setRegion] = useState("all");
@@ -77,11 +80,11 @@ export function Itinerary() {
             <div
               className={"day-art art-" + day.area.split(" ")[0].toLowerCase()}
             >
-              {day.area === "Otaru" ? (
-                <img src={trip.hero} alt="" />
-              ) : (
-                <span>{day.nameJa.split(" · ")[0]}</span>
-              )}
+              <img
+                src={destinationPhotos[day.area].src}
+                alt={destinationPhotos[day.area].alt}
+                loading="lazy"
+              />
             </div>
             <div className="day-copy">
               <span className="eyebrow">
@@ -126,7 +129,10 @@ export function DayDetail() {
 function DayContent({ day }: { day: (typeof itinerary)[number] }) {
   const { t, lang } = useApp();
   const [tab, setTab] = useState("timeline");
-  const [plan, setPlan] = useState("A");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const plan = searchParams.get("plan") === "B" ? "B" : "A";
+  const setPlan = (value: string) =>
+    setSearchParams({ plan: value }, { replace: true });
   const [note, setNote] = useState(() => {
     try {
       return readStored("note:" + day.id, "");
@@ -140,7 +146,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
   const placeIds = [
     ...new Set(items.flatMap((i) => (i.placeId ? [i.placeId] : []))),
   ];
-  const dayPlaces = placeIds.map((id) => places[id]);
+  const dayPlaces = dayMapPlaces(day, plan);
   return (
     <>
       <Link className="back-link" to="/itinerary">
@@ -148,14 +154,10 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
         {t("All days", "全部行程")}
       </Link>
       <section
-        className={"day-hero " + (day.area === "Otaru" ? "photo" : "plain")}
-        style={
-          day.area === "Otaru"
-            ? {
-                backgroundImage: `linear-gradient(0deg,rgba(17,35,43,.8),rgba(17,35,43,.05)),url(${trip.hero})`,
-              }
-            : undefined
-        }
+        className="day-hero photo"
+        style={{
+          backgroundImage: `linear-gradient(0deg,rgba(17,35,43,.88),rgba(17,35,43,.12)),url(${destinationPhotos[day.area].src})`,
+        }}
       >
         <div className="eyebrow">
           {t(`DAY ${dayIndex + 1}`, `第${dayIndex + 1}天`)} ·{" "}
@@ -176,6 +178,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
           {day.name[lang]} · {day.summary[lang]}
         </p>
       </section>
+      <PhotoCredit area={day.area} />
       <div className="day-meta">
         <span>
           <CalendarDays size={16} />
@@ -240,7 +243,15 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                       strokeWidth={1.5}
                     />
                     <div className="timeline-content">
-                      <h3>{item.title[lang]}</h3>
+                      <h3>
+                        <Link
+                          className="stop-detail-link"
+                          to={`/itinerary/${day.id}/stops/${item.id}?plan=${plan}`}
+                        >
+                          {item.title[lang]}
+                          <ChevronRight size={16} />
+                        </Link>
+                      </h3>
                       {place && <span className="ja">{place.nameJa}</span>}
                       {item.note && <p>{item.note[lang]}</p>}
                       {item.transport && (
@@ -312,7 +323,17 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
             </aside>
           </div>
         )}
-        {tab === "map" && <PlaceMap places={dayPlaces} />}
+        {tab === "map" && (
+          <>
+            <p className="map-help">
+              {t(
+                "Numbered stops follow your timeline. Food options in this area are also shown; they are suggestions, not reservations.",
+                "编号与时间线一致。同时显示本地区的美食备选，并非已预订餐厅。",
+              )}
+            </p>
+            <PlaceMap places={dayPlaces} />
+          </>
+        )}
         {tab === "food" && <FoodCards area={day.area} />}{" "}
         {tab === "notes" && (
           <section className="notes-editor">

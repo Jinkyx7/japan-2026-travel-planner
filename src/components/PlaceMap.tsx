@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MapPin, ArrowUpRight } from "lucide-react";
+import { MapPin, ArrowUpRight, Utensils } from "lucide-react";
 import type { Place } from "../types";
 import { loadGoogleMaps } from "../services/mapService";
 import { useApp } from "./AppContext";
@@ -42,19 +42,27 @@ export function PlaceMap({
           gestureHandling: "cooperative",
         });
         const bounds = new google.maps.LatLngBounds();
-        markers = points.map((p, i) => {
+        markers = points.map((p) => {
           bounds.extend(p.coordinates!);
-          const pin = new google.maps.marker.PinElement({
-            background: "#2f6b5b",
-            borderColor: "#fff",
-            glyphColor: "#fff",
-            glyph: numbered ? String(i + 1) : "•",
-          });
+          const food = p.category === "restaurant";
+          const pin = document.createElement("div");
+          pin.className = "place-marker" + (food ? " food-marker" : "");
+          if (food) {
+            pin.innerHTML =
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v19M20 22V3c-4 3-4 9 0 9"/></svg>';
+          }
+          if (numbered || !food) {
+            const label = document.createElement("span");
+            label.textContent = numbered
+              ? String(places.findIndex((place) => place.id === p.id) + 1)
+              : "•";
+            pin.append(label);
+          }
           const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position: p.coordinates,
-            title: lang === "en" ? p.nameEn : p.nameZh,
-            content: pin.element,
+            title: `${food ? t("Food", "美食") : t("Stop", "地点")}: ${lang === "en" ? p.nameEn : p.nameZh}`,
+            content: pin,
           });
           marker.addListener("click", () => setSelected(p.id));
           return marker;
@@ -104,8 +112,18 @@ export function PlaceMap({
                 className={selected === p.id ? "selected" : ""}
                 onClick={() => setSelected(p.id)}
               >
-                <span className="pin-number">
-                  {numbered ? i + 1 : <MapPin size={12} />}
+                <span
+                  className={
+                    "pin-number" +
+                    (p.category === "restaurant" ? " food-marker" : "")
+                  }
+                >
+                  {p.category === "restaurant" && <Utensils size={13} />}
+                  {numbered ? (
+                    i + 1
+                  ) : p.category !== "restaurant" ? (
+                    <MapPin size={12} />
+                  ) : null}
                 </span>
                 {lang === "en" ? p.nameEn : p.nameZh}
               </button>
@@ -150,6 +168,16 @@ export function PlaceMap({
           <MapsLink place={current} />
         </div>
       )}
+      <div className="map-legend">
+        <span>
+          <MapPin size={15} />
+          {t("Activities & other stops", "活动与其他地点")}
+        </span>
+        <span className="food-legend">
+          <Utensils size={15} />
+          {t("Food & cafés", "美食与咖啡")}
+        </span>
+      </div>
       <div className="map-caption">
         <span>
           <MapPin size={13} />

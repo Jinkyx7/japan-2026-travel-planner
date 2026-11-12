@@ -2855,3 +2855,107 @@ textarea {
 .bottom-nav a.active {
   color: var(--green);
 }
+
+/* Destination photography, stop details and category markers */
+.photo-credit {
+  font-size: 11px;
+  color: #687280;
+  margin: 9px 0 22px;
+  line-height: 1.7;
+}
+.photo-credit a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.stop-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+}
+.stop-detail-link:hover {
+  color: #2f6b5b;
+  text-decoration: underline;
+}
+.stop-detail-link svg {
+  flex-shrink: 0;
+}
+.stop-detail-panel {
+  max-width: 760px;
+  border: 1px solid #e2e7e3;
+  border-radius: 18px;
+  padding: clamp(22px, 5vw, 42px);
+  line-height: 1.8;
+}
+.stop-place-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.stop-place-heading > svg {
+  flex-shrink: 0;
+  color: #2f6b5b;
+  margin-top: 8px;
+}
+.stop-detail-panel p {
+  color: #59665f;
+}
+.stop-section {
+  margin-top: 28px;
+  border-top: 1px solid #e2e7e3;
+  padding-top: 20px;
+}
+.stop-section h2 {
+  font-size: 18px;
+}
+.place-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 7px;
+  border: 2px solid white;
+  border-radius: 18px 18px 18px 4px;
+  background: #2f6b5b;
+  color: white;
+  box-shadow: 0 2px 5px #0004;
+  font: 600 13px system-ui;
+}
+.food-marker {
+  background: #994d24 !important;
+  color: white;
+}
+.pin-number.food-marker {
+  width: auto;
+  min-width: 30px;
+  padding: 0 6px;
+  gap: 3px;
+}
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 13px 18px;
+  font-size: 12px;
+  color: #2f6b5b;
+  background: #fafbf9;
+}
+.map-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.food-legend {
+  color: #994d24;
+}
+.map-help {
+  color: #687280;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.stop-place-heading .eyebrow {
+  display: block;
+  margin-bottom: 8px;
+}

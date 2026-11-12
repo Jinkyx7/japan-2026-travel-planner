@@ -1,0 +1,30 @@
+{
+  "biei": {
+    "src": "/images/biei.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Essential_Biei_(HOKKAIDO-JAPAN)_(2371081681).jpg",
+    "author": "Chi King",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  "sapporo": {
+    "src": "/images/sapporo.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Hokkaido_Sapporo_Odori_Park.jpg",
+    "author": "Nkns",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+  },
+  "jozankei": {
+    "src": "/images/jozankei.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Jozankei_snow_light_path_2013_-_panoramio.jpg",
+    "author": "t-konno",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "tokyo": {
+    "src": "/images/tokyo.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tokyo_Skyline.jpg",
+    "author": "No machine-readable author provided. Ningyou assumed (based on copyright claims).",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+  }
+}

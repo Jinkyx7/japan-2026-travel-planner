@@ -9,6 +9,7 @@ import { Food, MapPage } from "./pages/Places";
 import { Shopping } from "./pages/Shopping";
 import { Expenses } from "./pages/Expenses";
 import { TripInfo } from "./pages/TripInfo";
+import { StopDetail } from "./pages/StopDetail";
 import "./styles.css";
 (window as unknown as { gm_authFailure: () => void }).gm_authFailure = () =>
   window.dispatchEvent(new Event("japan-maps-auth-failure"));
@@ -32,6 +33,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route index element={<Home />} />
             <Route path="itinerary" element={<Itinerary />} />
             <Route path="itinerary/:dayId" element={<DayDetail />} />
+            <Route
+              path="itinerary/:dayId/stops/:itemId"
+              element={<StopDetail />}
+            />
             <Route path="map" element={<MapPage />} />
             <Route path="food" element={<Food />} />
             <Route path="shopping" element={<Shopping />} />

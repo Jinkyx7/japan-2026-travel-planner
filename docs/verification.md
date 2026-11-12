@@ -9,3 +9,8 @@
 - Screenshots: `screenshots/home-desktop.jpg`, `screenshots/home-mobile.jpg`.
 
 Embedded Google Maps was not exercised with a real key because none was supplied. The no-key fallback and outbound place links were verified. API keys, referrer restrictions and billing are hosting configuration tasks. FX rates remain illustrative manual settings; Tokyo placeholder days remain intentionally open. No deployment or Git push was performed.
+
+
+## Destination photos and stop details update
+
+Added local destination photography with source/license credits, contextual stop detail routes, and food markers on combined day maps. Kept Notes. Verified hotel details in English/Chinese at 390px without overflow, direct detail reload, restaurant fallback selection, and Plan B preservation on return. Eight tests cover existing functionality plus deduplication and timeline-number preservation. Local map uses the no-key fallback; the live Google Maps path is checked after deployment.
