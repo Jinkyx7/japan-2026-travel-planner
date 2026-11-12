@@ -118,8 +118,8 @@ export const flights: Flight[] = [
     ],
     notes: [
       l(
-        "Economy. Allow time to leave the Airbnb, travel to New Chitose and check in; the document recommends airport arrival 3 hours before departure.",
-        "经济舱。需预留民宿退房、前往新千岁及值机时间；文件建议起飞前3小时抵达机场。",
+        "Economy. Updated plan: leave the Airbnb 06:30, travel from Sapporo 07:00–08:00, then check-in, baggage drop and security 08:00–09:40. Planned airport arrival is 2 h 20 min before departure; the supplied document recommends 3 hours. Confirm airline deadlines.",
+        "经济舱。更新计划：06:30民宿退房，07:00–08:00札幌前往新千岁，08:00–09:40值机、托运、安检。计划提前2小时20分抵达；所提供文件建议提前3小时，请核实航司截止时间。",
       ),
     ],
   },

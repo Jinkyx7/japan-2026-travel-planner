@@ -19,11 +19,14 @@ export type Place = {
   area: Area;
   coordinates?: { lat: number; lng: number };
   googleMapsUrl: string;
+  mapQuery?: string;
   website?: string;
   notes?: Localized;
 };
 export type Traveller = { id: string; displayName: string; color: string };
 export type TimelineItem = {
+  timeLabel?: Localized;
+  relatedPlaceIds?: string[];
   flightId?: string;
   transferSteps?: Localized[];
   transportSources?: { label: string; url: string }[];

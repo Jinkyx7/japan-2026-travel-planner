@@ -12,6 +12,79 @@ type Row = [
 ];
 const rows: Row[] = [
   [
+    "sapporo-factory",
+    "Sapporo Factory Atrium · Giant Christmas Tree",
+    "Sapporo Factory 中庭 · 巨型圣诞树",
+    "サッポロファクトリー アトリウム",
+    "attraction",
+    "Sapporo",
+    43.0653656,
+    141.3630003,
+    "https://sapporofactory.jp/event/detail/679",
+  ],
+  [
+    "ekimae-lights",
+    "Sapporo Ekimae-dori illuminations",
+    "札幌站前通灯饰",
+    "札幌駅前通（北1条付近・地上）",
+    "photo",
+    "Sapporo",
+    43.064,
+    141.3518,
+  ],
+  [
+    "tv-tower",
+    "Sapporo TV Tower",
+    "札幌电视塔",
+    "さっぽろテレビ塔",
+    "attraction",
+    "Sapporo",
+    43.0611,
+    141.3564,
+    "https://www.tv-tower.co.jp/en/",
+  ],
+  [
+    "red-brick",
+    "Former Hokkaido Government Office (Red Brick Office)",
+    "北海道厅旧本厅舍（红砖道厅）",
+    "北海道庁旧本庁舎",
+    "attraction",
+    "Sapporo",
+    43.0639,
+    141.3479,
+  ],
+  [
+    "hokkaido-university",
+    "Hokkaido University",
+    "北海道大学",
+    "北海道大学",
+    "attraction",
+    "Sapporo",
+    43.0748,
+    141.3408,
+  ],
+  [
+    "underground-shopping",
+    "Sapporo Underground Shopping Malls",
+    "札幌地下街",
+    "さっぽろ地下街",
+    "shopping",
+    "Sapporo",
+    43.0597,
+    141.353,
+  ],
+  [
+    "shiroi-koibito",
+    "Shiroi Koibito Park",
+    "白色恋人公园",
+    "白い恋人パーク",
+    "attraction",
+    "Sapporo",
+    43.0889,
+    141.2713,
+    "https://www.shiroikoibitopark.jp/en/",
+  ],
+  [
     "nrt-t2",
     "Narita Airport · Terminal 2",
     "成田机场 · 第2航站楼",
@@ -73,9 +146,9 @@ const rows: Row[] = [
   ],
   [
     "christmas-market",
-    "Munich Christmas Market",
-    "慕尼黑圣诞集市",
-    "ミュンヘン・クリスマス市 in Sapporo",
+    "Munich Christmas Market · Odori Nishi 1–2",
+    "慕尼黑圣诞市集 · 大通西1～2丁目",
+    "大通公園 西2丁目 ミュンヘン・クリスマス市",
     "attraction",
     "Sapporo",
     43.06,
@@ -83,9 +156,9 @@ const rows: Row[] = [
   ],
   [
     "illumination",
-    "Sapporo White Illumination",
-    "札幌白色灯树节",
-    "さっぽろホワイトイルミネーション",
+    "White Illumination · Odori venue (Nishi 1–5)",
+    "白色灯树节 · 大通会场（西1～5丁目）",
+    "大通公園 西3丁目 ホワイトイルミネーション 大通会場",
     "photo",
     "Sapporo",
     43.06,
@@ -343,3 +416,83 @@ export const places: Record<string, Place> = Object.fromEntries(
     ],
   ),
 );
+
+// Anchor venue links inside Odori Park so a broad event-name search cannot pick another venue.
+Object.assign(places.illumination, {
+  coordinates: { lat: 43.0605832, lng: 141.3526426 },
+  mapQuery: "大通公園 西3丁目 札幌",
+  googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("大通公園 西3丁目 札幌")}`,
+  website:
+    "https://www.sapporo.travel/white-illumination/event/illumination/odori/",
+  notes: {
+    en: "Odori venue spans Nishi 1–5. The map pin marks a point within the venue, not the whole festival. 19 December lighting hours: 16:30–22:00.",
+    zh: "大通会场范围为西1～5丁目；地图标记为会场内的定位点。12月19日点灯16:30–22:00。",
+  },
+});
+Object.assign(places["christmas-market"], {
+  coordinates: { lat: 43.0607, lng: 141.3543 },
+  mapQuery: "43.0607,141.3543",
+  googleMapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=43.0607%2C141.3543",
+  website: "https://www.sapporo.travel/white-illumination/event/munich/",
+});
+
+// Queries checked against Google Maps route results. Private stays use public station references.
+const verifiedQueries: Record<string, string> = {
+  "sapporo-factory": "サッポロファクトリー アトリウム",
+  tanukikoji: "狸小路商店街 札幌",
+  "ekimae-lights": "43.0633611,141.3513972",
+  susukino: "すすきの駅 札幌 日本",
+  ikebukuro: "池袋駅 東京 日本",
+  gracery: "ホテルグレイスリー札幌",
+  "red-brick": "北海道庁旧本庁舎",
+  "hokkaido-university": "北海道大学",
+  odori: "大通公園",
+  nakajima: "中島公園",
+  "tv-tower": "さっぽろテレビ塔",
+  tengu: "天狗山ロープウエイ",
+  sankaku: "三角市場 小樽",
+  sakaimachi: "堺町通り 小樽",
+  "shiroi-koibito": "白い恋人パーク",
+  nrt: "成田空港 第3ターミナル",
+  "nrt-t2": "成田空港 第2ターミナル",
+  cts: "新千歳空港",
+};
+for (const [id, query] of Object.entries(verifiedQueries)) {
+  places[id].mapQuery = query;
+  places[id].googleMapsUrl =
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+places["sapporo-rail"] = {
+  ...places["sapporo-station"],
+  id: "sapporo-rail",
+  nameEn: "JR Sapporo Station",
+  nameZh: "JR札幌站",
+  nameJa: "札幌駅",
+  mapQuery: "札幌駅 JR 北海道",
+  coordinates: { lat: 43.0686606, lng: 141.3507553 },
+  googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("札幌駅 JR 北海道")}`,
+};
+places.susukino.notes = {
+  en: "Map reference: Susukino Station, not the Airbnb building. Use the private booking address for the final walk.",
+  zh: "地图参考点为薄野站，并非民宿楼栋；最后一段步行请使用预订中的准确地址。",
+};
+places.ikebukuro.notes = {
+  en: "Map reference: Ikebukuro Station, not the Airbnb building. Use the host's exact address and exit instructions for the final walk.",
+  zh: "地图参考点为池袋站，并非民宿楼栋；最后一段请使用房东提供的准确地址与出口指引。",
+};
+places["ekimae-lights"].coordinates = { lat: 43.0633611, lng: 141.3513972 };
+
+// North forecourt reference, separate from the JR rail station and nearby bus stops.
+places["sapporo-station"].mapQuery = "43.0695,141.3507";
+places["sapporo-station"].googleMapsUrl =
+  "https://www.google.com/maps/search/?api=1&query=43.0695%2C141.3507";
+places["sapporo-station"].notes = {
+  en: "North-exit forecourt reference only. Confirm the exact hotel-shuttle boarding point in your reservation; this pin is not a bus-bay assignment.",
+  zh: "此处为北口站前广场参考点；酒店接驳的具体上车位置请以预订指引为准，并非指定公交站台。",
+};
+
+places["sapporo-factory"].notes = {
+  en: "Giant tree in the Atrium. Aim to be there before 18:00 for the music-and-light show. Event details and changes: see the official website.",
+  zh: "巨型圣诞树位于中庭（Atrium），建议18:00前到场等候音乐灯光秀；活动详情及变更以官网为准。",
+};

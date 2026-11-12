@@ -60,7 +60,11 @@ export function StopDetail() {
           <CalendarDays size={17} />
           {dateLabel(day.date, lang)}
         </span>
-        <span>{item.time ?? t("Flexible timing", "时间灵活安排")}</span>
+        <span>
+          {item.timeLabel?.[lang] ??
+            item.time ??
+            t("Flexible timing", "时间灵活安排")}
+        </span>
       </div>
       <section className="stop-detail-panel">
         {place ? (
@@ -106,6 +110,17 @@ export function StopDetail() {
               "具体地点尚未添加。",
             )}
           </p>
+        )}
+        {item.relatedPlaceIds && (
+          <div className="stop-section">
+            <h2>{t("Along the way", "沿途地点")}</h2>
+            {item.relatedPlaceIds.map((id) => (
+              <div key={id} className="related-stop">
+                <PlaceName place={places[id]} all />
+                <MapsLink place={places[id]} />
+              </div>
+            ))}
+          </div>
         )}
         {item.note && (
           <div className="stop-section">
@@ -155,18 +170,40 @@ export function StopDetail() {
                 {t("passengers", "人")}
               </p>
             )}
-            <a
-              className="text-link"
-              href={directionsUrl(
-                places[transport.originId],
-                places[transport.destinationId],
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t("Open directions", "查看路线")}
-              <ArrowUpRight size={14} />
-            </a>
+            {transport.confirmed ? (
+              <p className="map-help">
+                {t(
+                  "Reserved hotel shuttle: follow the meeting instructions in your booking.",
+                  "预约酒店接驳：请按预订中的集合指引乘车。",
+                )}
+              </p>
+            ) : (
+              <>
+                {["susukino", "ikebukuro"].some((id) =>
+                  [transport.originId, transport.destinationId].includes(id),
+                ) && (
+                  <p className="map-help">
+                    {t(
+                      "Directions use Susukino / Ikebukuro Station as the public reference for your stay. Enter your private booking address for the final leg.",
+                      "住宿导航以薄野站／池袋站为公开参考点；最后一段请填写预订中的准确地址。",
+                    )}
+                  </p>
+                )}
+                <a
+                  className="text-link"
+                  href={directionsUrl(
+                    places[transport.originId],
+                    places[transport.destinationId],
+                    item.kind === "walk" ? "walking" : "transit",
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t("Open directions", "查看路线")}
+                  <ArrowUpRight size={14} />
+                </a>
+              </>
+            )}
           </div>
         )}
       </section>

@@ -16,5 +16,5 @@ export function directionsUrl(
   destination: Place,
   mode = "transit",
 ) {
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin.nameJa)}&destination=${encodeURIComponent(destination.nameJa)}&travelmode=${mode}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin.mapQuery ?? origin.nameJa)}&destination=${encodeURIComponent(destination.mapQuery ?? destination.nameJa)}&travelmode=${mode}`;
 }

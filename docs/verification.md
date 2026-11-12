@@ -33,3 +33,11 @@ Added local destination photography with source/license credits, contextual stop
 - Added 21 bundled Wikimedia photographs and a photo on every stop detail. Private stays and fallback views are marked as area views. Photo source, author and license metadata retained; all photos are historical views, not a promise of winter appearance.
 - Added four airport ground transfers on 19, 25 and 29 December with step-by-step instructions and official JR Hokkaido, Keisei and Narita source links. No flight ground-directions links remain. Train times are not presented as booked; final Airbnb walks depend on the private host address.
 - Build and 14 tests pass, including locale selection, transfer ordering, removed flight and photo asset coverage. Mobile Chinese transfer detail checked at 390 × 844: loaded photo and no horizontal overflow. Reviewed photo contact sheet for place relevance.
+
+## Updated December itinerary and route audit — 13 November 2026
+
+- Replaced 19–25 December schedules in English and Chinese, including Shiroi Koibito Park, the TV Tower tour meeting point, and airport check-in planning. Removed the old 24 December Plan A/B.
+- 20 December now starts at 09:00; removed station shopping and preserved the 15:00 hotel shuttle. 21 December adds the Factory Atrium tree and 18:00 music/light show between Tanukikoji and dinner in Susukino.
+- Google Maps links were opened and checked individually; see map-route-review.md. Corrected ambiguous street/private-stay references, separated the JR station from the north-exit meeting area, and removed public-transit links for reserved hotel shuttles.
+- Grouped Otaru stops retain their related places on the map and in details. Long time ranges remain intact on mobile.
+- Final production build and all 16 tests passed. English/Chinese browser review confirmed revised schedules, 18:00 show, matching directions links, and no horizontal overflow at 566px. Booking documents and private addresses remain outside the repository.

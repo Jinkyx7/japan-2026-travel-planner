@@ -70,8 +70,8 @@ export function TripInfo() {
             <h3>{t("Sapporo Station → Hanamomiji", "札幌站 → 花红叶")}</h3>
             <p>
               {t(
-                "Meet at JR Sapporo Station North Exit",
-                "在 JR 札幌站北口集合",
+                "Meet 14:30–14:50 at JR Sapporo Station North Exit; shuttle departs at 15:00",
+                "14:30–14:50在JR札幌站北口集合、候车，15:00出发",
               )}
             </p>
           </div>

@@ -3259,3 +3259,18 @@ textarea {
     gap: 10px;
   }
 }
+
+/* Keep schedule ranges intact while the stop title wraps. */
+.timeline time {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.timeline-icon {
+  flex-shrink: 0;
+}
+.timeline-content {
+  min-width: 0;
+}
+.related-stop {
+  margin: 16px 0;
+}

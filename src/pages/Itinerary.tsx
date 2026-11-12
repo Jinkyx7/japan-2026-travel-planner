@@ -103,7 +103,7 @@ export function Itinerary() {
                 ? t("To be planned", "待规划")
                 : day.id === "dec-23"
                   ? t("Guided tour", "跟团游")
-                  : day.id === "dec-24"
+                  : day.items.some((item) => item.plan)
                     ? t("Plan A / B", "A / B 方案")
                     : day.name[lang]}
             </span>
@@ -196,7 +196,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
               <ChevronRight size={14} />
             </Link>
           )}
-          {day.id === "dec-24" && (
+          {day.items.some((item) => item.plan) && (
             <div className="plan-switch">
               {["A", "B"].map((p) => (
                 <button
@@ -260,7 +260,11 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                     <div className="timeline-dot">
                       {place ? placeIds.indexOf(place.id) + 1 : <span />}
                     </div>
-                    <time>{item.time ?? t("Flexible", "灵活")}</time>
+                    <time>
+                      {item.timeLabel?.[lang] ??
+                        item.time ??
+                        t("Flexible", "灵活")}
+                    </time>
                     <Icon
                       className="timeline-icon"
                       size={21}
@@ -300,18 +304,43 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                               {t("passengers", "人")}
                             </span>
                           )}
-                          <a
-                            className="text-link"
-                            target="_blank"
-                            rel="noreferrer"
-                            href={directionsUrl(
-                              places[item.transport.originId],
-                              places[item.transport.destinationId],
-                            )}
-                          >
-                            {t("Directions", "查看路线")}
-                            <ArrowRight size={13} />
-                          </a>
+                          {item.transport.confirmed ? (
+                            <p className="map-help">
+                              {t(
+                                "Reserved hotel shuttle: follow the meeting instructions in your booking.",
+                                "预约酒店接驳：请按预订中的集合指引乘车。",
+                              )}
+                            </p>
+                          ) : (
+                            <>
+                              {["susukino", "ikebukuro"].some((id) =>
+                                [
+                                  item.transport?.originId,
+                                  item.transport?.destinationId,
+                                ].includes(id),
+                              ) && (
+                                <p className="map-help">
+                                  {t(
+                                    "Directions use Susukino / Ikebukuro Station as the public reference for your stay. Enter your private booking address for the final leg.",
+                                    "住宿导航以薄野站／池袋站为公开参考点；最后一段请填写预订中的准确地址。",
+                                  )}
+                                </p>
+                              )}
+                              <a
+                                className="text-link"
+                                target="_blank"
+                                rel="noreferrer"
+                                href={directionsUrl(
+                                  places[item.transport.originId],
+                                  places[item.transport.destinationId],
+                                  item.kind === "walk" ? "walking" : "transit",
+                                )}
+                              >
+                                {t("Directions", "查看路线")}
+                                <ArrowRight size={13} />
+                              </a>
+                            </>
+                          )}
                         </div>
                       )}
                       {place && <MapsLink place={place} />}

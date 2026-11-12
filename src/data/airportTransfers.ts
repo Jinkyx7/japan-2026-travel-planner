@@ -48,7 +48,7 @@ export const airportTransfers: Record<string, TimelineItem> = {
       "Leave early for the 10:20 flight. Walk or take a taxi to Sapporo Station, or use the Namboku subway from Susukino to Sapporo, then take a JR Airport train.",
       "为10:20航班提前出发。步行或打车至札幌站，或从薄野乘南北线至札幌，再转JR机场列车。",
     ),
-    transport: { originId: "susukino", destinationId: "cts" },
+    transport: { originId: "sapporo-rail", destinationId: "cts" },
     transferSteps: [
       l(
         "Check out and follow the host's directions from the Airbnb to Susukino station, or take a taxi directly to JR Sapporo Station with luggage.",
@@ -59,8 +59,8 @@ export const airportTransfers: Record<string, TimelineItem> = {
         "从薄野乘南北线往麻生方向至札幌，按JR指示换乘开往新千岁机场的机场列车。",
       ),
       l(
-        "At New Chitose, follow Domestic Departures signs to Jetstar. The booking document recommends arrival 3 hours before 10:20, so plan around 07:20 and check early train availability. Use a prebooked taxi if the rail itinerary cannot meet your target.",
-        "到新千岁后按国内出发指示前往捷星。预订文件建议起飞前3小时抵达，即约07:20；请核实早班列车，若铁路无法满足目标时间则提前预约出租车。",
+        "Your updated schedule reaches New Chitose at 08:00 for check-in, baggage drop and security until 09:40. Follow Domestic Departures signs to Jetstar. This is 2 h 20 min before the 10:20 departure; the booking document recommends 3 hours. Confirm the airline’s deadlines and check early train availability.",
+        "更新计划08:00抵达新千岁，08:00–09:40值机、托运及安检，按国内出发指示前往捷星。距10:20起飞2小时20分；预订文件建议提前3小时，请核实航司截止时间及早班列车。",
       ),
       l(
         "The map starts from the Susukino area, not the private apartment. Add the exact address in your own Maps app and check winter service updates.",

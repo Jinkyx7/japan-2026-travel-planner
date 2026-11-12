@@ -24,8 +24,8 @@ test("airport transfers surround flights in travel order and carry route instruc
   );
   const tokyo = itinerary.find((d) => d.id === "dec-25")!.items;
   const flight = tokyo.findIndex((i) => i.flightId === "cts-nrt");
-  assert.equal(tokyo[flight - 1].id, "airbnb-to-airport");
-  assert.equal(tokyo[flight + 1].id, "narita-to-airbnb");
+  assert.ok(tokyo.findIndex((i) => i.id === "airbnb-to-airport") < flight);
+  assert.ok(tokyo.findIndex((i) => i.id === "narita-to-airbnb") > flight);
   const transfers = itinerary
     .flatMap((d) => d.items)
     .filter((i) => i.transferSteps);

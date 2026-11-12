@@ -1,3 +1,4 @@
+import { places } from "./places";
 import photos from "./stopPhotos.json";
 import { destinationPhotos } from "./destinationPhotos";
 import type { TripDay, TimelineItem } from "../types";
@@ -26,6 +27,7 @@ const placeImages: Record<string, keyof typeof photos> = {
   ikebukuro: "Ikebukuro",
 };
 export function stopPhoto(day: TripDay, item: TimelineItem) {
+  const area = item.placeId ? places[item.placeId].area : day.area;
   const photo =
     item.placeId === "hanamomiji"
       ? destinationPhotos.Jozankei
@@ -41,9 +43,7 @@ export function stopPhoto(day: TripDay, item: TimelineItem) {
     );
   return {
     ...(photo ??
-      (day.area === "Otaru"
-        ? photos["Otaru Canal"]
-        : destinationPhotos[day.area])),
+      (area === "Otaru" ? photos["Otaru Canal"] : destinationPhotos[area])),
     areaView,
   };
 }
