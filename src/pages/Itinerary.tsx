@@ -26,7 +26,6 @@ import { dateLabel } from "../lib/trip";
 import { readStored, writeStored } from "../services/storage";
 import { directionsUrl } from "../services/mapService";
 import { destinationPhotos } from "../data/destinationPhotos";
-import { PhotoCredit } from "../components/PhotoCredit";
 import { dayMapPlaces } from "../lib/dayMap";
 export function Itinerary() {
   const { t, lang } = useApp();
@@ -178,7 +177,6 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
           {day.name[lang]} · {day.summary[lang]}
         </p>
       </section>
-      <PhotoCredit area={day.area} />
       <div className="day-meta">
         <span>
           <CalendarDays size={16} />
@@ -258,7 +256,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                       </h3>
                       {place && <span className="ja">{place.nameJa}</span>}
                       {item.note && <p>{item.note[lang]}</p>}
-                      {item.transport && (
+                      {item.transport && item.kind !== "flight" && (
                         <div className="transport-detail">
                           <p>
                             {lang === "en"

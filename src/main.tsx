@@ -11,6 +11,7 @@ import { Expenses } from "./pages/Expenses";
 import { TripInfo } from "./pages/TripInfo";
 import { StopDetail } from "./pages/StopDetail";
 import { Accommodations, AccommodationDetail, Flights } from "./pages/Bookings";
+import { PhotoCredits } from "./pages/PhotoCredits";
 import "./styles.css";
 (window as unknown as { gm_authFailure: () => void }).gm_authFailure = () =>
   window.dispatchEvent(new Event("japan-maps-auth-failure"));
@@ -48,6 +49,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               element={<AccommodationDetail />}
             />
             <Route path="flights" element={<Flights />} />
+            <Route path="photo-credits" element={<PhotoCredits />} />
             <Route path="info" element={<TripInfo />} />
             <Route path="more" element={<More />} />
             <Route path="*" element={<NotFound />} />

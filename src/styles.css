@@ -3147,3 +3147,70 @@ textarea {
     padding: 16px;
   }
 }
+
+.stop-photo {
+  position: relative;
+  margin: 0 0 24px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--surface);
+}
+.stop-photo img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 35vw, 420px);
+  object-fit: cover;
+}
+.stop-photo > span {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(17, 35, 43, 0.78);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.transfer-steps {
+  padding-left: 24px;
+}
+.transfer-steps li {
+  padding: 0 0 16px 8px;
+  line-height: 1.8;
+}
+.transfer-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+}
+.credits-list {
+  display: grid;
+  gap: 20px;
+}
+.credits-list article {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+}
+.credits-list img {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.credits-list h2 {
+  margin-top: 0;
+}
+.credits-list p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .credits-list article {
+    flex-direction: column;
+  }
+  .credits-list img {
+    width: 100%;
+    height: 180px;
+  }
+}

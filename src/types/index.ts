@@ -25,6 +25,8 @@ export type Place = {
 export type Traveller = { id: string; displayName: string; color: string };
 export type TimelineItem = {
   flightId?: string;
+  transferSteps?: Localized[];
+  transportSources?: { label: string; url: string }[];
   id: string;
   time?: string;
   title: Localized;

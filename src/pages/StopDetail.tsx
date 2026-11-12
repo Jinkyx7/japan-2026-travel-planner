@@ -15,6 +15,7 @@ import { directionsUrl } from "../services/mapService";
 import { accommodationByPlace } from "../data/accommodations";
 import { flightById } from "../data/flights";
 import { StayDetails, FlightCard } from "../components/BookingDetails";
+import { stopPhoto } from "../data/stopPhoto";
 export function StopDetail() {
   const { dayId, itemId } = useParams();
   const [searchParams] = useSearchParams();
@@ -29,6 +30,7 @@ export function StopDetail() {
     );
   const place = item.placeId ? places[item.placeId] : undefined;
   const transport = item.transport;
+  const photo = stopPhoto(day, item);
   return (
     <>
       <Link
@@ -49,6 +51,10 @@ export function StopDetail() {
           <h1>{item.title[lang]}</h1>
         </div>
       </header>
+      <div className="stop-photo">
+        <img src={photo.src} alt={photo.alt} />
+        {photo.areaView && <span>{t("Area view", "周边景观")}</span>}
+      </div>
       <div className="day-meta">
         <span>
           <CalendarDays size={17} />
@@ -75,7 +81,7 @@ export function StopDetail() {
               </div>
             </div>
             {place.notes && <p>{place.notes[lang]}</p>}
-            {accommodationByPlace[place.id] && (
+            {!item.transferSteps && accommodationByPlace[place.id] && (
               <StayDetails stay={accommodationByPlace[place.id]} />
             )}
             <div className="restaurant-links">
@@ -109,6 +115,30 @@ export function StopDetail() {
         )}
         {item.flightId && flightById[item.flightId] && (
           <FlightCard flight={flightById[item.flightId]} />
+        )}
+        {item.transferSteps && (
+          <div className="stop-section">
+            <h2>{t("Step-by-step transfer", "交通步骤")}</h2>
+            <ol className="transfer-steps">
+              {item.transferSteps.map((step, index) => (
+                <li key={index}>{step[lang]}</li>
+              ))}
+            </ol>
+            <div className="transfer-sources">
+              {item.transportSources?.map((source) => (
+                <a
+                  key={source.url}
+                  className="text-link"
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {source.label}
+                  <ArrowUpRight size={14} />
+                </a>
+              ))}
+            </div>
+          </div>
         )}
         {transport && !item.flightId && (
           <div className="stop-section">

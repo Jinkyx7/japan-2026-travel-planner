@@ -1,0 +1,170 @@
+{
+  "Asahiyama Zoo": {
+    "src": "/images/stops/asahiyama-zoo.jpg",
+    "alt": "Asahiyama Zoo",
+    "source": "https://commons.wikimedia.org/wiki/File:Asahiyama_zoo_entrance.jpg",
+    "author": "欅 (Keyaki)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "Hitsujigaoka Observation Hill": {
+    "src": "/images/stops/hitsujigaoka-observation-hill.jpg",
+    "alt": "Hitsujigaoka Observation Hill",
+    "source": "https://commons.wikimedia.org/wiki/File:Hitsujigaoka-sheep.jpg",
+    "author": "ykso",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+  },
+  "Ikebukuro": {
+    "src": "/images/stops/ikebukuro.jpg",
+    "alt": "Ikebukuro",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunshine_60_Observatory_@_Sunshine_Building_@_Ikebukuro_(11547419543).jpg",
+    "author": "Guilhem Vellut from Annecy, France",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  "Nakajima Park": {
+    "src": "/images/stops/nakajima-park.jpg",
+    "alt": "Nakajima Park",
+    "source": "https://commons.wikimedia.org/wiki/File:Nakajima_Park_Sapporo04n4272.jpg",
+    "author": "663highland",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
+  },
+  "Narita International Airport": {
+    "src": "/images/stops/narita-international-airport.jpg",
+    "alt": "Narita International Airport",
+    "source": "https://commons.wikimedia.org/wiki/File:Narita_Nemzetk%C3%B6zi_Rep%C3%BCl%C5%91t%C3%A9r.jpg",
+    "author": "Petra.G09",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "New Chitose Airport": {
+    "src": "/images/stops/new-chitose-airport.jpg",
+    "alt": "New Chitose Airport",
+    "source": "https://commons.wikimedia.org/wiki/File:Shinchitose.aierial_shoot.jpg",
+    "author": "ブルーノ・プラス",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Otaru Music Box Museum": {
+    "src": "/images/stops/otaru-music-box-museum.jpg",
+    "alt": "Otaru Music Box Museum",
+    "source": "https://commons.wikimedia.org/wiki/File:Otaru-orgel-do,Musical_box_museum,%E5%B0%8F%E6%A8%BD%E3%82%AA%E3%83%AB%E3%82%B4%E3%83%BC%E3%83%AB%E5%A0%826180194.JPG",
+    "author": "松岡明芳",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "Otaru Station": {
+    "src": "/images/stops/otaru-station.jpg",
+    "alt": "Otaru Station",
+    "source": "https://commons.wikimedia.org/wiki/File:Otaru_Station_20220626.jpg",
+    "author": "皓月旗",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Sapporo Station": {
+    "src": "/images/stops/sapporo-station.jpg",
+    "alt": "Sapporo Station",
+    "source": "https://commons.wikimedia.org/wiki/File:JR_Sapporo_Sta03n3200.jpg",
+    "author": "663highland",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
+  },
+  "Susukino": {
+    "src": "/images/stops/susukino.jpg",
+    "alt": "Susukino",
+    "source": "https://commons.wikimedia.org/wiki/File:Spectaculars_of_Susukino-Sapporo.jpg",
+    "author": "Chatama",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+  },
+  "Tanukikoji": {
+    "src": "/images/stops/tanukikoji.jpg",
+    "alt": "Tanukikoji",
+    "source": "https://commons.wikimedia.org/wiki/File:Tanukikoji_01.jpg",
+    "author": "Mugu-shisai",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "Otaru Canal": {
+    "src": "/images/stops/otaru-canal.jpg",
+    "alt": "Otaru Canal",
+    "source": "https://commons.wikimedia.org/wiki/File:Otaru_Canal_HDR1.jpg",
+    "author": "Tan Wei Liang Byorn",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Mt Tengu": {
+    "src": "/images/stops/mt-tengu.jpg",
+    "alt": "Mt Tengu",
+    "source": "https://commons.wikimedia.org/wiki/File:Otaru_Tengu-yama_ski_resort_View.JPG",
+    "author": "wakimasa",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+  },
+  "Blue Pond": {
+    "src": "/images/stops/blue-pond.jpg",
+    "alt": "Blue Pond",
+    "source": "https://commons.wikimedia.org/wiki/File:Shirogane_Blue_Pond_by_night,_April_2023_08.jpg",
+    "author": "Calistemon",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Shirahige Falls": {
+    "src": "/images/stops/shirahige-falls.jpg",
+    "alt": "Shirahige Falls",
+    "source": "https://commons.wikimedia.org/wiki/File:Shirahige_Falls,_Biei_River,_Hokkaido,_Japan.jpg",
+    "author": "OKJaguar",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Ningle Terrace": {
+    "src": "/images/stops/ningle-terrace.jpg",
+    "alt": "Ningle Terrace",
+    "source": "https://commons.wikimedia.org/wiki/File:130503_Ningle_Terrace_Furano_Hokkaido_Japan03s.jpg",
+    "author": "663highland",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "Hotel Gracery Sapporo": {
+    "src": "/images/stops/hotel-gracery-sapporo.jpg",
+    "alt": "Hotel Gracery Sapporo",
+    "source": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB%E3%82%B0%E3%83%AC%E3%82%A4%E3%82%B9%E3%83%AA%E3%83%BC%E6%9C%AD%E5%B9%8C%EF%BC%88Hotel_Gracery_Sapporo%EF%BC%89_-_panoramio.jpg",
+    "author": "t-konno",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "Kitaichi Glass": {
+    "src": "/images/stops/kitaichi-glass.jpg",
+    "alt": "Kitaichi Glass",
+    "source": "https://commons.wikimedia.org/wiki/File:%E5%8C%97%E4%B8%80%E7%A1%9D%E5%AD%90_%E3%82%AF%E3%83%AA%E3%82%B9%E3%82%BF%E3%83%AB%E9%A4%A8.JPG",
+    "author": "Sho Horiuchi",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "Sankaku Market": {
+    "src": "/images/stops/sankaku-market.jpg",
+    "alt": "Sankaku Market",
+    "source": "https://commons.wikimedia.org/wiki/File:%E4%B8%89%E8%A7%92%E5%B8%82%E5%A0%B4,_%E5%B0%8F%E6%A8%BD,_%E5%8C%97%E6%B5%B7%E9%81%93,_%E6%97%A5%E6%9C%AC,_Otaru,_Hokkaido,_Japan,_%E3%81%8A%E3%81%9F%E3%82%8B%E3%81%97,_%E3%81%BB%E3%81%A3%E3%81%8B%E3%81%84%E3%81%A9%E3%81%86,_%E3%81%AB%E3%81%A3%E3%81%BD%E3%82%93,_%E3%81%AB%E3%81%BB%E3%82%93_(47763328802).jpg",
+    "author": "bryan...",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
+  "Sakaimachi Street": {
+    "src": "/images/stops/sakaimachi-street.jpg",
+    "alt": "Sakaimachi Street",
+    "source": "https://commons.wikimedia.org/wiki/File:Otaru_Sakaimachi_Dori_Shopping_Street,_Otaru,_Hokkaido,_Japan,_%E5%B0%8F%E6%A8%BD%E5%A0%BA%E7%94%BA%E9%80%9A%E5%95%86%E5%BA%97%E8%A1%97,_%E5%B0%8F%E6%A8%BD,_%E5%8C%97%E6%B5%B7%E9%81%93,_%E6%97%A5%E6%9C%AC,_%E5%B0%8F%E6%A8%BD%E5%A0%BA%E7%94%BA%E9%80%9A%E3%82%8A%E5%95%86%E5%BA%97%E8%A1%97,_%E3%81%8A%E3%81%9F%E3%82%8B%E3%81%97,_%E3%81%BB%E3%81%A3%E3%81%8B%E3%81%84%E3%81%A9%E3%81%86,_%E3%81%AB%E3%81%A3%E3%81%BD%E3%82%93,_%E3%81%AB%E3%81%BB%E3%82%93_(16145496863).jpg",
+    "author": "bryan...",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
+  "Shanghai Pudong International Airport": {
+    "src": "/images/stops/shanghai-pudong-international-airport.jpg",
+    "alt": "Shanghai Pudong International Airport",
+    "source": "https://commons.wikimedia.org/wiki/File:Shanghai_Pudong_Airport_2024_(cropped).jpg",
+    "author": "User:Yuezhi_Huang",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  }
+}

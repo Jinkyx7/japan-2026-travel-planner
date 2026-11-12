@@ -78,8 +78,8 @@ export function Flights() {
         eyebrow={t("THE JOURNEY THERE & BACK", "出发与归途")}
         title={t("Flights", "航班安排")}
         subtitle={t(
-          "17 Dec 2026 – 10 Jan 2027 · all flight times are local to the departure or arrival airport.",
-          "2026年12月17日至2027年1月10日 · 航班时间均为起降机场当地时间。",
+          "19 Dec 2026 – 10 Jan 2027 · all flight times are local to the departure or arrival airport.",
+          "2026年12月19日至2027年1月10日 · 航班时间均为起降机场当地时间。",
         )}
       />
       <p className="map-help">

@@ -9,7 +9,8 @@ const stop = (
   note?: Localized,
   kind?: TimelineItem["kind"],
 ): TimelineItem => ({ id, time, title: l(en, zh), placeId, note, kind });
-export const itinerary: TripDay[] = [
+import { airportTransfers } from "./airportTransfers";
+const plannedDays: TripDay[] = [
   {
     id: "dec-19",
     date: "2026-12-19",
@@ -534,3 +535,16 @@ export const itinerary: TripDay[] = [
     ],
   },
 ];
+
+export const itinerary: TripDay[] = plannedDays.map((day) => ({
+  ...day,
+  items: day.items.flatMap((item) => {
+    if (day.id === "dec-19" && item.id === "arrival")
+      return [item, airportTransfers.arrival];
+    if (day.id === "dec-25" && item.flightId === "cts-nrt")
+      return [airportTransfers.sapporo, item, airportTransfers.tokyoArrival];
+    if (day.id === "dec-29" && item.id === "checkout")
+      return [airportTransfers.tokyoDeparture];
+    return [item];
+  }),
+}));

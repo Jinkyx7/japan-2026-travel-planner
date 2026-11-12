@@ -12,6 +12,7 @@ import {
   travellerRepository,
 } from "../services/storage";
 import { initialTravellers } from "../data/travellers";
+import { preferredLanguage } from "../lib/language";
 const Context = createContext<{
   lang: Language;
   t: (en: string, zh: string) => string;
@@ -22,9 +23,12 @@ const Context = createContext<{
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, updateLang] = useState<Language>(() => {
     try {
-      return readStored("language", "en");
+      return preferredLanguage(
+        readStored("language", null),
+        navigator.language,
+      );
     } catch {
-      return "en";
+      return preferredLanguage(null, navigator.language);
     }
   });
   const [travellers, setTravellers] = useState(initialTravellers);

@@ -42,38 +42,6 @@ const unspecified = l(
 // Booking-document schedules, not live flight status. Passenger identifiers omitted.
 export const flights: Flight[] = [
   {
-    id: "akl-pvg",
-    number: "NZ0289",
-    airline: l("Air New Zealand", "新西兰航空"),
-    departure: end(
-      "AKL",
-      "Auckland",
-      "奥克兰",
-      "International",
-      "国际航站楼",
-      "2026-12-17",
-      "23:55",
-      "NZDT · UTC+13",
-    ),
-    arrival: end(
-      "PVG",
-      "Shanghai Pudong",
-      "上海浦东",
-      "Terminal 2",
-      "第2航站楼",
-      "2026-12-18",
-      "07:00",
-      "CST · UTC+8",
-    ),
-    baggage: [unspecified],
-    notes: [
-      l(
-        "Economy · confirmation document marks this flight confirmed. Arrival is the following calendar day.",
-        "经济舱 · 确认单标注航班已确认。于次日抵达。",
-      ),
-    ],
-  },
-  {
     id: "pvg-cts",
     number: "9C8791",
     airline: l("Spring Airlines", "春秋航空"),

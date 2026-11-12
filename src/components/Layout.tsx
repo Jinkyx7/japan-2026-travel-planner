@@ -84,6 +84,7 @@ export function Layout() {
           <Mountain size={16} />{" "}
           {t("A little planning. A lot of memories.", "一点规划，满满回忆。")}
         </span>
+        <Link to="/photo-credits">{t("Photo credits", "图片来源")}</Link>
         <Link to="/info">
           {t("Trip information", "旅行信息")}
           <ArrowUpRight size={13} />
@@ -124,6 +125,12 @@ export function More() {
             icon: BedDouble,
           },
           { to: "/flights", en: "Flights", zh: "航班", icon: Plane },
+          {
+            to: "/photo-credits",
+            en: "Photo credits",
+            zh: "图片来源",
+            icon: Info,
+          },
           { to: "/info", en: "Trip information", zh: "旅行信息", icon: Info },
         ].map((n) => (
           <Link key={n.to} to={n.to}>

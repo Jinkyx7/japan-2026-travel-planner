@@ -35,9 +35,6 @@ test("flight timeline references preserve airport dates and distinct Narita term
 });
 
 test("overnight return and outbound dates remain explicit rather than Japan-time conversions", () => {
-  assert.equal(flightById["akl-pvg"].departure.date, "2026-12-17");
-  assert.equal(flightById["akl-pvg"].arrival.date, "2026-12-18");
-  assert.equal(flightById["akl-pvg"].departure.time, "23:55");
   assert.equal(flightById["wnz-pvg"].arrival.date, "2027-01-09");
   assert.equal(flightById["pvg-akl"].departure.date, "2027-01-10");
   assert.equal(flightById["pvg-akl"].departure.time, "00:10");

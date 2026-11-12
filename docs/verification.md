@@ -24,3 +24,12 @@ Added local destination photography with source/license credits, contextual stop
 - Production build and all 11 tests passed. Tests cover continuous stay dates, flight references, Narita terminal differences, overnight dates and existing itinerary/expense/storage behavior.
 - Mobile browser review at 390 × 844: accommodation navigation from itinerary, Hanamomiji details, Airbnb details, flight anchor navigation and expandable baggage notes. English/Chinese flight content has no horizontal overflow. Otaru caption absent; browser console has no errors.
 - Earlier live Google Maps testing confirmed restaurant markers and selection. This update does not change map rendering.
+
+## Language, airport transfers and stop photos — 12 November 2026
+
+- First visit detects the browser's preferred language: zh locales use Chinese; other locales use English. Valid saved manual choices take precedence; storage failure still falls back to browser detection.
+- Removed NZ0289 from the flight data and adjusted the displayed date range.
+- Removed captions under daily itinerary heroes; attribution remains on a dedicated Photo credits page linked from More and desktop footer.
+- Added 21 bundled Wikimedia photographs and a photo on every stop detail. Private stays and fallback views are marked as area views. Photo source, author and license metadata retained; all photos are historical views, not a promise of winter appearance.
+- Added four airport ground transfers on 19, 25 and 29 December with step-by-step instructions and official JR Hokkaido, Keisei and Narita source links. No flight ground-directions links remain. Train times are not presented as booked; final Airbnb walks depend on the private host address.
+- Build and 14 tests pass, including locale selection, transfer ordering, removed flight and photo asset coverage. Mobile Chinese transfer detail checked at 390 × 844: loaded photo and no horizontal overflow. Reviewed photo contact sheet for place relevance.
