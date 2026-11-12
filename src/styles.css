@@ -3216,3 +3216,46 @@ textarea {
 .day-pagination-top a {
   min-height: 44px;
 }
+
+.day-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+}
+.day-meta-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 23px;
+  min-width: 0;
+}
+.day-meta-details > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.day-overview .day-pagination-top {
+  margin: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 16px;
+}
+.day-overview .day-pagination-top > span {
+  display: none;
+}
+.day-overview .day-pagination-top a {
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .day-overview {
+    gap: 10px;
+  }
+  .day-overview .day-pagination-top {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+  }
+  .day-meta-details {
+    gap: 10px;
+  }
+}

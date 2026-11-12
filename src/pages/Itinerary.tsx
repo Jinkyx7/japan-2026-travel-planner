@@ -152,25 +152,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
         <ArrowLeft size={15} />
         {t("All days", "全部行程")}
       </Link>
-      <nav
-        className="day-pagination day-pagination-top"
-        aria-label={t("Day navigation", "日期导航")}
-      >
-        {dayIndex > 0 ? (
-          <Link to={"/itinerary/" + itinerary[dayIndex - 1].id}>
-            <ArrowLeft size={16} />
-            {t("Previous day", "前一天")}
-          </Link>
-        ) : (
-          <span />
-        )}
-        {dayIndex < itinerary.length - 1 && (
-          <Link to={"/itinerary/" + itinerary[dayIndex + 1].id}>
-            {t("Next day", "后一天")}
-            <ArrowRight size={16} />
-          </Link>
-        )}
-      </nav>
+
       <section
         className="day-hero photo"
         style={{
@@ -196,37 +178,58 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
           {day.name[lang]} · {day.summary[lang]}
         </p>
       </section>
-      <div className="day-meta">
-        <span>
-          <CalendarDays size={16} />
-          {dateLabel(day.date, lang, { month: "long", day: "numeric" })}
-        </span>
-        {day.accommodationId && (
-          <Link
-            className="stay-meta-link"
-            to={`/accommodation/${day.accommodationId}`}
-          >
-            <BedDouble size={17} />
-            {lang === "en"
-              ? places[day.accommodationId].nameEn
-              : places[day.accommodationId].nameZh}
-            <ChevronRight size={14} />
-          </Link>
-        )}
-        {day.id === "dec-24" && (
-          <div className="plan-switch">
-            {["A", "B"].map((p) => (
-              <button
-                key={p}
-                aria-pressed={plan === p}
-                className={plan === p ? "active" : ""}
-                onClick={() => setPlan(p)}
-              >
-                {t("Plan", "方案")} {p}
-              </button>
-            ))}
-          </div>
-        )}
+      <div className="day-meta day-overview">
+        <div className="day-meta-details">
+          <span>
+            <CalendarDays size={16} />
+            {dateLabel(day.date, lang, { month: "long", day: "numeric" })}
+          </span>
+          {day.accommodationId && (
+            <Link
+              className="stay-meta-link"
+              to={`/accommodation/${day.accommodationId}`}
+            >
+              <BedDouble size={17} />
+              {lang === "en"
+                ? places[day.accommodationId].nameEn
+                : places[day.accommodationId].nameZh}
+              <ChevronRight size={14} />
+            </Link>
+          )}
+          {day.id === "dec-24" && (
+            <div className="plan-switch">
+              {["A", "B"].map((p) => (
+                <button
+                  key={p}
+                  aria-pressed={plan === p}
+                  className={plan === p ? "active" : ""}
+                  onClick={() => setPlan(p)}
+                >
+                  {t("Plan", "方案")} {p}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <nav
+          className="day-pagination day-pagination-top"
+          aria-label={t("Day navigation", "日期导航")}
+        >
+          {dayIndex > 0 ? (
+            <Link to={"/itinerary/" + itinerary[dayIndex - 1].id}>
+              <ArrowLeft size={16} />
+              {t("Previous day", "前一天")}
+            </Link>
+          ) : (
+            <span />
+          )}
+          {dayIndex < itinerary.length - 1 && (
+            <Link to={"/itinerary/" + itinerary[dayIndex + 1].id}>
+              {t("Next day", "后一天")}
+              <ArrowRight size={16} />
+            </Link>
+          )}
+        </nav>
       </div>
       <Tabs
         value={tab}
@@ -399,6 +402,25 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
           </section>
         )}
       </div>
+      <nav
+        className="day-pagination"
+        aria-label={t("Day navigation at bottom", "底部日期导航")}
+      >
+        {dayIndex > 0 ? (
+          <Link to={"/itinerary/" + itinerary[dayIndex - 1].id}>
+            <ArrowLeft size={16} />
+            {t("Previous day", "前一天")}
+          </Link>
+        ) : (
+          <span />
+        )}
+        {dayIndex < itinerary.length - 1 && (
+          <Link to={"/itinerary/" + itinerary[dayIndex + 1].id}>
+            {t("Next day", "后一天")}
+            <ArrowRight size={16} />
+          </Link>
+        )}
+      </nav>
     </>
   );
 }
