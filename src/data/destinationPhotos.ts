@@ -18,7 +18,7 @@ export const destinationPhotos: Record<
   },
   Jozankei: {
     ...photos.jozankei,
-    alt: "Snow lanterns in Jozankei, photographed in 2013",
+    alt: "Momiji-yu hot spring at Hanamomiji in Jozankei",
   },
   "Asahikawa / Biei": {
     ...photos.biei,

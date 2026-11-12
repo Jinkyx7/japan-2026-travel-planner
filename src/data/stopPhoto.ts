@@ -27,11 +27,13 @@ const placeImages: Record<string, keyof typeof photos> = {
 };
 export function stopPhoto(day: TripDay, item: TimelineItem) {
   const photo =
-    item.flightId === "pvg-wnz"
-      ? photos["Shanghai Pudong International Airport"]
-      : item.placeId
-        ? photos[placeImages[item.placeId]]
-        : undefined;
+    item.placeId === "hanamomiji"
+      ? destinationPhotos.Jozankei
+      : item.flightId === "pvg-wnz"
+        ? photos["Shanghai Pudong International Airport"]
+        : item.placeId
+          ? photos[placeImages[item.placeId]]
+          : undefined;
   const areaView =
     !photo ||
     ["susukino", "ikebukuro", "nrt", "nrt-t2", "letao"].includes(

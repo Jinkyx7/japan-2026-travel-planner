@@ -152,6 +152,25 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
         <ArrowLeft size={15} />
         {t("All days", "全部行程")}
       </Link>
+      <nav
+        className="day-pagination day-pagination-top"
+        aria-label={t("Day navigation", "日期导航")}
+      >
+        {dayIndex > 0 ? (
+          <Link to={"/itinerary/" + itinerary[dayIndex - 1].id}>
+            <ArrowLeft size={16} />
+            {t("Previous day", "前一天")}
+          </Link>
+        ) : (
+          <span />
+        )}
+        {dayIndex < itinerary.length - 1 && (
+          <Link to={"/itinerary/" + itinerary[dayIndex + 1].id}>
+            {t("Next day", "后一天")}
+            <ArrowRight size={16} />
+          </Link>
+        )}
+      </nav>
       <section
         className="day-hero photo"
         style={{
@@ -378,22 +397,6 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
               {saved}
             </span>
           </section>
-        )}
-      </div>
-      <div className="day-pagination">
-        {dayIndex > 0 ? (
-          <Link to={"/itinerary/" + itinerary[dayIndex - 1].id}>
-            <ArrowLeft size={16} />
-            {t("Previous day", "前一天")}
-          </Link>
-        ) : (
-          <span />
-        )}
-        {dayIndex < 10 && (
-          <Link to={"/itinerary/" + itinerary[dayIndex + 1].id}>
-            {t("Next day", "后一天")}
-            <ArrowRight size={16} />
-          </Link>
         )}
       </div>
     </>

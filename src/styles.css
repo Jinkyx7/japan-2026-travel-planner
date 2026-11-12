@@ -629,16 +629,6 @@ textarea:focus {
   color: #7f9190;
   position: relative;
 }
-.day-art:before {
-  content: "";
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top: 40px;
-  background: linear-gradient(135deg, #ffffffa0, #c5d4ce);
-  transform: rotate(45deg);
-  border-radius: 12px;
-}
 .day-art span {
   font-family: Georgia, serif;
   font-size: 13px;
@@ -3213,4 +3203,16 @@ textarea {
     width: 100%;
     height: 180px;
   }
+}
+
+.day-pagination-top {
+  border-top: 0;
+  margin: 0 0 20px;
+  padding: 0;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+}
+.day-pagination-top a {
+  min-height: 44px;
 }

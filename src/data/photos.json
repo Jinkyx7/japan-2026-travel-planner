@@ -14,11 +14,11 @@
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
   },
   "jozankei": {
-    "src": "/images/jozankei.jpg",
-    "source": "https://commons.wikimedia.org/wiki/File:Jozankei_snow_light_path_2013_-_panoramio.jpg",
-    "author": "t-konno",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "src": "/images/hanamomiji-onsen.jpg",
+    "source": "https://shikanoyu.co.jp/en/hanamomiji/spa/momijiyu/",
+    "author": "Hanamomiji / Shikanoyu Group",
+    "license": "Official hotel photograph · © Shikanoyu Group",
+    "licenseUrl": "https://shikanoyu.co.jp/en/hanamomiji/spa/momijiyu/"
   },
   "tokyo": {
     "src": "/images/tokyo.jpg",
