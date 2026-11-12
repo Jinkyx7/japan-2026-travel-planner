@@ -29,14 +29,18 @@ export const itinerary: TripDay[] = [
           "Arrive in Hokkaido",
           "抵达北海道",
           "cts",
-          l("Shanghai PVG → New Chitose CTS", "上海浦东 → 新千岁"),
+          l(
+            "Spring Airlines 9C8791 · PVG T2 08:20 → CTS International 12:50 (local times)",
+            "春秋航空9C8791 · 浦东T2 08:20 → 新千岁国际航站楼12:50（当地时间）",
+          ),
           "flight",
         ),
+        flightId: "pvg-cts",
         transport: { originId: "pvg", destinationId: "cts" },
       },
       stop(
         "hotel",
-        undefined,
+        "14:00+",
         "Settle into Sapporo",
         "入住札幌酒店",
         "gracery",
@@ -105,7 +109,7 @@ export const itinerary: TripDay[] = [
       },
       stop(
         "onsen",
-        undefined,
+        "~16:00",
         "Check in, onsen & kaiseki",
         "入住、温泉与怀石晚餐",
         "hanamomiji",
@@ -155,7 +159,7 @@ export const itinerary: TripDay[] = [
       stop("park", undefined, "Nakajima Park", "中岛公园散步", "nakajima"),
       stop(
         "checkin",
-        undefined,
+        "15:00+",
         "Airbnb check-in",
         "入住民宿",
         "susukino",
@@ -428,6 +432,7 @@ export const itinerary: TripDay[] = [
           ),
           "flight",
         ),
+        flightId: "cts-nrt",
         transport: {
           originId: "cts",
           destinationId: "nrt",
@@ -436,7 +441,7 @@ export const itinerary: TripDay[] = [
       },
       stop(
         "stay",
-        undefined,
+        "16:00+",
         "Ikebukuro Airbnb check-in",
         "入住池袋民宿",
         "ikebukuro",
@@ -453,11 +458,12 @@ export const itinerary: TripDay[] = [
       ),
     ],
   },
-  ...[26, 27, 28, 29].map((n) => ({
+  ...[26, 27, 28].map((n) => ({
     id: `dec-${n}`,
     date: `2026-12-${n}`,
     area: "Tokyo" as const,
     name: l("Tokyo, to be planned", "东京，待规划"),
+    accommodationId: "ikebukuro",
     nameJa: "東京",
     summary: l("A little room for discovery", "为探索留一点空间"),
     items: [],
@@ -467,4 +473,64 @@ export const itinerary: TripDay[] = [
       "东京行程确认前，此日暂留空白。",
     ),
   })),
+  {
+    id: "dec-29",
+    date: "2026-12-29",
+    area: "Tokyo",
+    name: l("Onward to Wenzhou", "前往温州"),
+    nameJa: "東京",
+    summary: l(
+      "Checkout · Narita T2 · Shanghai connection · Wenzhou",
+      "退房 · 成田T2 · 上海中转 · 温州",
+    ),
+    accommodationId: "ikebukuro",
+    note: l(
+      "Flight times are local to each airport. Arrange checkout and the Narita transfer in time for the flight; the checkout deadline is not a recommended departure time.",
+      "航班时间均为各机场当地时间。请按航班提前安排退房与成田机场交通，最晚退房时间不代表建议出发时间。",
+    ),
+    items: [
+      stop(
+        "checkout",
+        undefined,
+        "Check out & travel to Narita T2",
+        "退房并前往成田T2",
+        "ikebukuro",
+        l(
+          "Checkout by 11:00; plan to leave earlier as needed for airport check-in.",
+          "最晚11:00退房，需根据机场值机安排提前离开。",
+        ),
+        "stay",
+      ),
+      {
+        ...stop(
+          "flight",
+          "13:50",
+          "Fly to Shanghai · MU524",
+          "飞往上海 · MU524",
+          "nrt-t2",
+          l(
+            "Narita T2 13:50 JST → Shanghai Pudong T1 16:30 CST",
+            "成田T2 13:50日本时间 → 浦东T1 16:30中国时间",
+          ),
+          "flight",
+        ),
+        flightId: "nrt-pvg",
+      },
+      {
+        ...stop(
+          "connection",
+          "18:05 CST",
+          "Connect to Wenzhou · FM9527",
+          "转机前往温州 · FM9527",
+          undefined,
+          l(
+            "Pudong T1 18:05 → Wenzhou T2 19:30 (China time). Connection: 1 h 35 min; document states baggage checked through.",
+            "浦东T1 18:05 → 温州T2 19:30（中国时间）。中转1小时35分钟，文件标注行李直挂。",
+          ),
+          "flight",
+        ),
+        flightId: "pvg-wnz",
+      },
+    ],
+  },
 ];

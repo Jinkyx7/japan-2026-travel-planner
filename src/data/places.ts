@@ -12,6 +12,16 @@ type Row = [
 ];
 const rows: Row[] = [
   [
+    "nrt-t2",
+    "Narita Airport · Terminal 2",
+    "成田机场 · 第2航站楼",
+    "成田空港 第2ターミナル",
+    "transport",
+    "Tokyo",
+    35.773,
+    140.387,
+  ],
+  [
     "cts",
     "New Chitose Airport",
     "新千岁机场",

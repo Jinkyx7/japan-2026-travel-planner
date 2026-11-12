@@ -99,7 +99,9 @@ test("all shared Place references resolve and Tokyo placeholders stay empty", ()
   for (const item of shoppingItems)
     for (const id of item.recommendedPlaces) assert.ok(places[id]);
   assert.ok(
-    itinerary.slice(7).every((day) => day.pending && day.items.length === 0),
+    itinerary
+      .slice(7, 10)
+      .every((day) => day.pending && day.items.length === 0),
   );
 });
 test("repositories persist CRUD and checklist across instances", async () => {

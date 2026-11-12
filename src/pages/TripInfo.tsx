@@ -1,9 +1,12 @@
+import { Link } from "react-router-dom";
+import { flights } from "../data/flights";
+import { dateLabel } from "../lib/trip";
 import { useState, type FormEvent } from "react";
 import { Users, Plane, Bus, Check, Info } from "lucide-react";
 import { useApp } from "../components/AppContext";
 import { PageHeading } from "../components/UI";
 export function TripInfo() {
-  const { t, travellers, saveTravellers } = useApp();
+  const { t, lang, travellers, saveTravellers } = useApp();
   const [status, setStatus] = useState("");
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,21 +37,30 @@ export function TripInfo() {
         <section className="panel info-card">
           <Plane size={24} />
           <h2>{t("Flights", "航班")}</h2>
-          <div className="info-item">
-            <span className="eyebrow">DEC 19</span>
-            <h3>PVG → CTS</h3>
-            <p>
-              {t(
-                "Arrival 12:50 · New Chitose Airport",
-                "12:50抵达 · 新千岁机场",
-              )}
-            </p>
-          </div>
-          <div className="info-item">
-            <span className="eyebrow">DEC 25 · JETSTAR JAPAN GK124</span>
-            <h3>10:20 CTS → 12:10 NRT</h3>
-            <p>{t("Narita Airport · Terminal 3", "成田机场 · 第3航站楼")}</p>
-          </div>
+          {flights.map((flight) => (
+            <Link
+              className="info-item flight-summary"
+              key={flight.id}
+              to={`/flights#${flight.id}`}
+            >
+              <span className="eyebrow">
+                {dateLabel(flight.departure.date, lang)} · {flight.number}
+              </span>
+              <h3>
+                {flight.departure.code} → {flight.arrival.code}
+              </h3>
+              <p>
+                {flight.departure.time} → {flight.arrival.time} ·{" "}
+                {t("airport local times", "机场当地时间")}
+              </p>
+            </Link>
+          ))}
+          <Link className="button primary" to="/flights">
+            {t("Flight details & baggage", "航班详情与行李")}
+          </Link>
+          <Link className="button secondary" to="/accommodation">
+            {t("Accommodation details", "住宿详情")}
+          </Link>
         </section>
         <section className="panel info-card">
           <Bus size={24} />
@@ -116,14 +128,14 @@ export function TripInfo() {
           </p>
           <p>
             {t(
-              "Times are shown in Japan time. Check transport schedules and seasonal opening dates before heading out.",
-              "行程时间均为日本时间。出发前请确认交通班次及季节性开放日期。",
+              "Daily itinerary and accommodation times are in Japan time. Flight times use each airport’s local time. Recheck schedules before travel.",
+              "每日行程与住宿时间为日本时间；航班采用各机场当地时间。出发前请核实最新班次。",
             )}
           </p>
           <p>
             {t(
-              "Tokyo days remain open until plans are confirmed.",
-              "东京行程确认前，暂保留空白。",
+              "Tokyo sightseeing remains open; the 29 December departure is recorded.",
+              "东京观光安排暂留空白；已记录12月29日离境航班。",
             )}
           </p>
         </section>

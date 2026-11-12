@@ -12,6 +12,9 @@ import { itinerary } from "../data/itinerary";
 import { places } from "../data/places";
 import { dateLabel } from "../lib/trip";
 import { directionsUrl } from "../services/mapService";
+import { accommodationByPlace } from "../data/accommodations";
+import { flightById } from "../data/flights";
+import { StayDetails, FlightCard } from "../components/BookingDetails";
 export function StopDetail() {
   const { dayId, itemId } = useParams();
   const [searchParams] = useSearchParams();
@@ -72,18 +75,8 @@ export function StopDetail() {
               </div>
             </div>
             {place.notes && <p>{place.notes[lang]}</p>}
-            {place.category === "hotel" && (
-              <p>
-                {["susukino", "ikebukuro"].includes(place.id)
-                  ? t(
-                      "This is an area-level location for the private stay. Use your booking for the exact address and arrival instructions.",
-                      "这里仅显示私人住宿所在地区。具体地址与入住方式请查看预订信息。",
-                    )
-                  : t(
-                      "Your planned stay. Check your booking for check-in times, room details, and arrival instructions.",
-                      "行程中的住宿。入住时间、房型与抵达方式请查看预订信息。",
-                    )}
-              </p>
+            {accommodationByPlace[place.id] && (
+              <StayDetails stay={accommodationByPlace[place.id]} />
             )}
             <div className="restaurant-links">
               <MapsLink place={place} />
@@ -114,7 +107,10 @@ export function StopDetail() {
             <p>{item.note[lang]}</p>
           </div>
         )}
-        {transport && (
+        {item.flightId && flightById[item.flightId] && (
+          <FlightCard flight={flightById[item.flightId]} />
+        )}
+        {transport && !item.flightId && (
           <div className="stop-section">
             <h2>{t("Getting there", "交通安排")}</h2>
             <PlaceName place={places[transport.originId]} all />

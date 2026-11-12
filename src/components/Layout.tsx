@@ -1,6 +1,8 @@
 import { NavLink, Outlet, Link, useLocation } from "react-router-dom";
 import {
   Mountain,
+  BedDouble,
+  Plane,
   House,
   CalendarDays,
   Map,
@@ -25,8 +27,12 @@ export function Layout() {
   const { lang, setLang, t } = useApp();
   const location = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    const anchor = location.hash
+      ? document.getElementById(location.hash.slice(1))
+      : null;
+    if (anchor) anchor.scrollIntoView();
+    else window.scrollTo(0, 0);
+  }, [location.pathname, location.hash]);
   return (
     <>
       <a className="skip-link" href="#main">
@@ -111,6 +117,13 @@ export function More() {
       <div className="panel menu-list">
         {[
           ...navigation.slice(4),
+          {
+            to: "/accommodation",
+            en: "Accommodation",
+            zh: "住宿",
+            icon: BedDouble,
+          },
+          { to: "/flights", en: "Flights", zh: "航班", icon: Plane },
           { to: "/info", en: "Trip information", zh: "旅行信息", icon: Info },
         ].map((n) => (
           <Link key={n.to} to={n.to}>

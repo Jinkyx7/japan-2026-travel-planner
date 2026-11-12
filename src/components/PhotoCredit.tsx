@@ -4,6 +4,7 @@ import { useApp } from "./AppContext";
 export function PhotoCredit({ area }: { area: Area }) {
   const photo = destinationPhotos[area];
   const { t } = useApp();
+  if (!photo.source) return null;
   return (
     <p className="photo-credit">
       {photo.source ? (

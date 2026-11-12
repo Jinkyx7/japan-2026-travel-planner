@@ -2959,3 +2959,191 @@ textarea {
   display: block;
   margin-bottom: 8px;
 }
+
+/* Booking details keep dates, times and source caveats readable on phones. */
+.stay-list,
+.flight-list {
+  display: grid;
+  gap: 20px;
+}
+.stay-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 26px;
+}
+.stay-card > div {
+  flex: 1;
+  min-width: 0;
+}
+.stay-card > svg {
+  flex-shrink: 0;
+  color: #2f6b5b;
+}
+.stay-card p {
+  color: #687280;
+  font-size: 13px;
+  margin: 9px 0 0;
+}
+.accommodation-panel {
+  max-width: 860px;
+  padding: clamp(20px, 4vw, 40px);
+}
+.booking-times {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0 10px;
+}
+.booking-times > div {
+  background: #f0f4f0;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.booking-times strong {
+  font-size: clamp(17px, 2vw, 24px);
+}
+.booking-times span,
+.booking-times small,
+.booking-time-note {
+  color: #5e6e64;
+  font-size: 12px;
+}
+.booking-facts {
+  margin: 24px 0;
+}
+.booking-facts > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e6eae6;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.booking-facts dt {
+  color: #687280;
+}
+.booking-facts dd {
+  margin: 0;
+}
+.booking-notes {
+  padding-left: 20px;
+  color: #526159;
+  line-height: 1.8;
+}
+.booking-notes li + li {
+  margin-top: 12px;
+}
+.booking-notice {
+  background: #faf4e7;
+  border-left: 3px solid #b8914b;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 22px 0;
+  line-height: 1.7;
+  font-size: 13px;
+}
+.booking-notice h3 {
+  margin: 0 0 8px;
+}
+.booking-notice p:last-child {
+  margin-bottom: 0;
+}
+.stay-meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.flight-card {
+  padding: clamp(20px, 4vw, 34px);
+  scroll-margin-top: 110px;
+}
+.flight-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid #e6eae6;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+}
+.flight-card-heading h2 {
+  font-size: 24px;
+  margin: 0;
+}
+.flight-card-heading > span {
+  font-size: 14px;
+  color: #687280;
+}
+.flight-route {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.flight-route > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+.flight-route strong {
+  font-size: clamp(20px, 3vw, 30px);
+  color: #2f6b5b;
+}
+.flight-route strong span {
+  font-size: 16px;
+}
+.flight-route > div > span:not(.eyebrow),
+.flight-route small {
+  font-size: 12px;
+  color: #526159;
+  line-height: 1.6;
+}
+.flight-more {
+  margin-top: 24px;
+  border-top: 1px solid #e6eae6;
+  padding-top: 18px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.flight-more summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #2f6b5b;
+  min-height: 30px;
+}
+.flight-more h3 {
+  font-size: 15px;
+}
+.flight-summary {
+  display: block;
+}
+.flight-summary:hover {
+  color: #2f6b5b;
+}
+.info-card > .button {
+  margin: 8px 8px 0 0;
+}
+@media (max-width: 600px) {
+  .booking-facts > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .booking-times > div {
+    padding: 14px;
+  }
+  .stay-card {
+    gap: 12px;
+    padding: 20px;
+  }
+  .stop-detail-panel .flight-card {
+    padding: 16px;
+  }
+}

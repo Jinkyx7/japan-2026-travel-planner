@@ -185,12 +185,16 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
           {dateLabel(day.date, lang, { month: "long", day: "numeric" })}
         </span>
         {day.accommodationId && (
-          <span>
+          <Link
+            className="stay-meta-link"
+            to={`/accommodation/${day.accommodationId}`}
+          >
             <BedDouble size={17} />
             {lang === "en"
               ? places[day.accommodationId].nameEn
               : places[day.accommodationId].nameZh}
-          </span>
+            <ChevronRight size={14} />
+          </Link>
         )}
         {day.id === "dec-24" && (
           <div className="plan-switch">
