@@ -27,6 +27,9 @@ import { readStored, writeStored } from "../services/storage";
 import { directionsUrl } from "../services/mapService";
 import { destinationPhotos } from "../data/destinationPhotos";
 import { dayMapPlaces } from "../lib/dayMap";
+import { PaymentBadge, useLinkedExpenses } from "../components/LinkedPayments";
+import { stayExpenseId, stopExpenseTarget } from "../lib/expenseLinks";
+import { accommodationByPlace } from "../data/accommodations";
 export function Itinerary() {
   const { t, lang } = useApp();
   const [region, setRegion] = useState("all");
@@ -146,6 +149,13 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
     ...new Set(items.flatMap((i) => (i.placeId ? [i.placeId] : []))),
   ];
   const dayPlaces = dayMapPlaces(day, plan);
+  const stay = day.accommodationId
+    ? accommodationByPlace[day.accommodationId]
+    : undefined;
+  const linked = useLinkedExpenses([
+    ...items.map((item) => stopExpenseTarget(day, item).id),
+    ...(stay ? [stayExpenseId(stay)] : []),
+  ]);
   return (
     <>
       <Link className="back-link" to="/itinerary">
@@ -195,6 +205,12 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                 : places[day.accommodationId].nameZh}
               <ChevronRight size={14} />
             </Link>
+          )}
+          {stay && !linked.error && !linked.loading && (
+            <PaymentBadge
+              targetId={stayExpenseId(stay)}
+              expenses={linked.expenses}
+            />
           )}
           {day.items.some((item) => item.plan) && (
             <div className="plan-switch">
@@ -346,6 +362,12 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                         </div>
                       )}
                       {place && <MapsLink place={place} />}
+                      {!linked.error && !linked.loading && (
+                        <PaymentBadge
+                          targetId={stopExpenseTarget(day, item).id}
+                          expenses={linked.expenses}
+                        />
+                      )}
                     </div>
                   </article>
                 );

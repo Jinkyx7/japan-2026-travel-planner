@@ -1,0 +1,95 @@
+-- Valid references are public itinerary identifiers, without private financial data.
+create table public.trip_expense_targets (
+  id text primary key,
+  kind text not null check (kind in ('stay','stop')),
+  check ((kind='stay' and id like 'stay:%') or (kind='stop' and id like 'stop:%'))
+);
+alter table public.trip_expense_targets enable row level security;
+create policy members_read_expense_targets on public.trip_expense_targets for select to authenticated
+  using ((select exists(select 1 from public.trip_members)));
+revoke all on public.trip_expense_targets from public, anon, authenticated;
+grant select on public.trip_expense_targets to authenticated;
+grant all on public.trip_expense_targets to service_role;
+
+insert into public.trip_expense_targets(id,kind) values
+('stay:gracery:2026-12-19','stay'),
+('stay:hanamomiji:2026-12-20','stay'),
+('stay:susukino:2026-12-21','stay'),
+('stay:ikebukuro:2026-12-25','stay'),
+('stop:dec-19:arrival','stop'),
+('stop:dec-19:airport-to-hotel','stop'),
+('stop:dec-19:to-odori','stop'),
+('stop:dec-19:dinner','stop'),
+('stop:dec-19:tv-tower','stop'),
+('stop:dec-19:market','stop'),
+('stop:dec-19:lights','stop'),
+('stop:dec-19:return','stop'),
+('stop:dec-20:to-red-brick','stop'),
+('stop:dec-20:red-brick','stop'),
+('stop:dec-20:to-university','stop'),
+('stop:dec-20:university','stop'),
+('stop:dec-20:lunch','stop'),
+('stop:dec-20:luggage','stop'),
+('stop:dec-20:to-shuttle','stop'),
+('stop:dec-20:meet','stop'),
+('stop:dec-20:shuttle','stop'),
+('stop:dec-20:relax','stop'),
+('stop:dec-20:dinner','stop'),
+('stop:dec-21:shuttle','stop'),
+('stop:dec-21:arrival','stop'),
+('stop:dec-21:lunch','stop'),
+('stop:dec-21:park','stop'),
+('stop:dec-21:to-airbnb','stop'),
+('stop:dec-21:shopping','stop'),
+('stop:dec-21:to-factory','stop'),
+('stop:dec-21:factory-tree','stop'),
+('stop:dec-21:return-susukino','stop'),
+('stop:dec-21:dinner','stop'),
+('stop:dec-22:depart','stop'),
+('stop:dec-22:jr','stop'),
+('stop:dec-22:to-mountain','stop'),
+('stop:dec-22:mountain','stop'),
+('stop:dec-22:to-station','stop'),
+('stop:dec-22:lunch','stop'),
+('stop:dec-22:to-street','stop'),
+('stop:dec-22:street','stop'),
+('stop:dec-22:canal','stop'),
+('stop:dec-22:dinner','stop'),
+('stop:dec-22:return','stop'),
+('stop:dec-23:wake','stop'),
+('stop:dec-23:breakfast','stop'),
+('stop:dec-23:to-meeting','stop'),
+('stop:dec-23:meet','stop'),
+('stop:dec-23:depart','stop'),
+('stop:dec-23:zoo','stop'),
+('stop:dec-23:biei','stop'),
+('stop:dec-23:falls','stop'),
+('stop:dec-23:blue-pond','stop'),
+('stop:dec-23:kamifurano','stop'),
+('stop:dec-23:ningle','stop'),
+('stop:dec-24:shop','stop'),
+('stop:dec-24:lunch','stop'),
+('stop:dec-24:rest','stop'),
+('stop:dec-24:to-park','stop'),
+('stop:dec-24:park','stop'),
+('stop:dec-24:cafe','stop'),
+('stop:dec-24:lights','stop'),
+('stop:dec-24:return','stop'),
+('stop:dec-24:dinner','stop'),
+('stop:dec-25:wake','stop'),
+('stop:dec-25:checkout','stop'),
+('stop:dec-25:airbnb-to-airport','stop'),
+('stop:dec-25:checkin','stop'),
+('stop:dec-25:flight','stop'),
+('stop:dec-25:arrival','stop'),
+('stop:dec-25:narita-to-airbnb','stop'),
+('stop:dec-29:checkout','stop'),
+('stop:dec-29:flight','stop'),
+('stop:dec-29:connection','stop');
+
+alter table public.trip_expenses
+  add column linked_item_id text references public.trip_expense_targets(id),
+  add column item_paid_in_full boolean not null default false,
+  add constraint full_payment_requires_link check (not item_paid_in_full or linked_item_id is not null);
+create index trip_expenses_linked_item_idx on public.trip_expenses(linked_item_id);
+-- Existing expenses remain unlinked; no payment status is inferred from a booking.

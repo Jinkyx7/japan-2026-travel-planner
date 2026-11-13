@@ -27,14 +27,22 @@ The SDK is shared across panels. Each mounted panel keeps one map and reuses mar
 - Tokyo December 26–29 intentionally left unplanned.
 - Food filters, maps, shared places, shopping by product or place, and daily notes.
 - Editable expenses with original JPY/NZD/CNY amounts, payer and participant selection, filters, totals and settlement suggestions.
-- Traveller nicknames editable in Trip information.
+- Expenses can link to a stay or itinerary stop. Member-only details and timeline badges show payers and recorded payments; paid-in-full status is explicit, so deposits aren't mistaken for completed bills.
+- Total trip spending shows both JPY and an approximate CNY equivalent using the shared manual rates, with CNY calculated directly from original-currency payments.
+- Member-only shared expenses and traveller names, with email/password login and password changes under More.
 - Accessible forms and native modal dialog, responsive layout, desktop navigation and mobile bottom navigation.
 
 ## Data and persistence
 
 `src/data/` owns itinerary, places, restaurants, shopping, travellers and manual exchange rates. Content is separate from JSX. Types are in `src/types/index.ts`.
 
-`src/services/storage.ts` defines asynchronous `ExpenseRepository` and `ShoppingRepository` interfaces. Replace the exported localStorage implementations with Supabase implementations later; UI callers can retain the same methods. Browser-local records use the `japan2026:v1:` prefix. Data is **per browser/device**, not synchronized across family members. Clearing browser data removes it. Expenses start empty, not with sample transactions.
+The itinerary, maps and other travel pages are public. `/expenses` requires a Supabase Auth session and an active row in `trip_members`. Signing in alone does not grant membership. The database enforces access with RLS; clients cannot add members or edit their permissions. Account creation and resets are administrator tasks; there is no public registration form. Members can change their website password under **More** by entering their current password.
+
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env.local`. Only use a publishable key here; never use a secret or service-role key in the frontend. `src/services/expenses.ts` saves shared expenses to Supabase and detects stale edits using row versions. Travellers and their nicknames are also shared. Expenses start empty. Entries refresh on return to the app, reconnect, or the Refresh button; this is not a live Realtime subscription.
+
+Shopping checklists and daily notes still use this browser's local storage with the `japan2026:v1:` prefix. Clearing browser data removes those local records. Legacy expense storage is only read after member access succeeds; members can explicitly import existing device records without deleting their originals. Repeated imports skip existing IDs. Export backup downloads JSON with all currently loaded expenses, travellers and the manual rate settings; it does not send payments.
+
+The schema migration is in `supabase/migrations/`. Seed the personal email allowlist through trusted administration, not a committed migration. `supabase/tests/member_access.sql` verifies member CRUD, validation, optimistic updates, guest/nonmember isolation and revocation in a rolled-back transaction. See `docs/shared-ledger.md` for setup and verification details.
 
 Rates in `src/data/exchangeRates.ts` are illustrative manual settings (JPY base, NZD 90, CNY 21). Confirm and edit them before settling. Conversion rounds each transaction to whole base-currency yen; largest-remainder allocation ensures shares sum to the converted amount. The model supports weighted custom shares; the V1 form uses equal shares. Settlement suggestions do not send payments.
 
@@ -42,7 +50,7 @@ Trip progress uses Japan's calendar date. Timetable estimates, unconfirmed activ
 
 ## Deploy to Vercel
 
-Import this GitHub repository in Vercel. Choose Vite; build command `npm run build`, output `dist`, Node 22+. Add the optional map environment variables. `vercel.json` provides SPA rewrites so day-detail deep links load directly. No server, database or authentication is required.
+Import this GitHub repository in Vercel. Choose Vite; build command `npm run build`, output `dist`, Node 22+. Add the map and Supabase frontend environment variables before building. `vercel.json` provides SPA rewrites so day-detail deep links load directly. The public travel pages work without a backend; the shared ledger needs the Supabase schema and Auth accounts. When Supabase configuration is missing, the ledger remains locked. Commit/push/deploy only when explicitly requested.
 
 ## Visual assets
 
@@ -54,7 +62,7 @@ Japan 2026 includes a PWA manifest, home-screen icons, standalone display, safe-
 
 To test the actual service worker locally, run `npm run build`, then `npm run preview -- --port 4173` and open http://localhost:4173/more. The regular Vite development server intentionally does not enable offline caching, so development updates do not become stuck behind a worker.
 
-Keep the app online until More reports that the offline copy is saved (roughly 12 MB). The app shell, bundled photos, itinerary, accommodation and flight data are precached, including deep links not previously visited. Google Maps scripts/tiles, external websites and APIs are never cached by our worker and require internet. Browser storage may be cleared or evicted; reopen online before travel. Personal expenses and checklists remain in this device's local storage, with no automatic cross-device sync.
+Keep the app online until More reports that the offline copy is saved (roughly 12 MB). The app shell, bundled photos, itinerary, accommodation and flight data are precached, including deep links not previously visited. Google Maps scripts/tiles, external websites and Supabase responses are never cached by our worker and require internet. Browser storage may be cleared or evicted; reopen online before travel. The shared ledger requires internet; offline writes and automatic offline syncing are not implemented. Checklists remain local to the device.
 
 Updates wait for the user to choose **Update now**; **Later** preserves the current session. Finish any unsaved form before updating. Registration checks again on a subsequent visible visit or reconnect. Vercel serves the worker/manifest directly with revalidation; no production deployment is needed to test locally.
 

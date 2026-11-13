@@ -16,6 +16,8 @@ import { accommodationByPlace } from "../data/accommodations";
 import { flightById } from "../data/flights";
 import { StayDetails, FlightCard } from "../components/BookingDetails";
 import { stopPhoto } from "../data/stopPhoto";
+import { LinkedPaymentDetails } from "../components/LinkedPayments";
+import { stopExpenseTarget } from "../lib/expenseLinks";
 export function StopDetail() {
   const { dayId, itemId } = useParams();
   const [searchParams] = useSearchParams();
@@ -31,6 +33,7 @@ export function StopDetail() {
   const place = item.placeId ? places[item.placeId] : undefined;
   const transport = item.transport;
   const photo = stopPhoto(day, item);
+  const expenseTarget = stopExpenseTarget(day, item);
   return (
     <>
       <Link
@@ -205,6 +208,9 @@ export function StopDetail() {
               </>
             )}
           </div>
+        )}
+        {expenseTarget.kind !== "stay" && (
+          <LinkedPaymentDetails targetId={expenseTarget.id} />
         )}
       </section>
     </>

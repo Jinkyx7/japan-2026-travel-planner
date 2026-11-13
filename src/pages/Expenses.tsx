@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Plus,
   Wallet,
@@ -13,11 +20,28 @@ import {
   ShoppingBag,
   Ticket,
   Ellipsis,
+  Download,
+  RefreshCw,
+  Upload,
 } from "lucide-react";
 import { useApp } from "../components/AppContext";
 import { PageHeading, Tabs, EmptyState } from "../components/UI";
-import { expenseRepository } from "../services/storage";
-import { expenseSummary, money, currencyDigits } from "../lib/expenses";
+import {
+  expenseRepository,
+  expenseBackup,
+  ExpenseConflictError,
+} from "../services/expenses";
+import { LocalStorageExpenseRepository } from "../services/storage";
+import { useAuth } from "../components/AuthContext";
+import { SignOut } from "../components/MemberAccess";
+import { ExpenseTargetOptions } from "../components/ExpenseTargetOptions";
+import { getExpenseTarget, type ExpenseTarget } from "../lib/expenseLinks";
+import {
+  expenseSummary,
+  money,
+  currencyDigits,
+  convertedExpenseTotal,
+} from "../lib/expenses";
 import { exchangeRates } from "../data/exchangeRates";
 import { japanDate, dateLabel } from "../lib/trip";
 import type { Currency, Expense, ExpenseCategory } from "../types";
@@ -35,7 +59,21 @@ const categories: {
   { id: "other", en: "Other", zh: "其他", icon: Ellipsis },
 ];
 export function Expenses() {
-  const { t, lang, travellers } = useApp();
+  const {
+    t,
+    lang,
+    travellers,
+    travellersReady,
+    travellersError,
+    reloadTravellers,
+  } = useApp();
+  const { session } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTarget = getExpenseTarget(searchParams.get("add"));
+  const linkFilter =
+    searchParams.get("linked") === "unlinked"
+      ? "unlinked"
+      : (getExpenseTarget(searchParams.get("linked"))?.id ?? "");
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [tab, setTab] = useState("list");
   const [category, setCategory] = useState("all");
@@ -45,21 +83,84 @@ export function Expenses() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string>();
-  async function refresh() {
+  const [deleting, setDeleting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [legacy, setLegacy] = useState<Expense[]>([]);
+  const [legacyError, setLegacyError] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [status, setStatus] = useState("");
+  const [online, setOnline] = useState(navigator.onLine);
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
     try {
       setExpenses(await expenseRepository.getExpenses());
       setError("");
     } catch {
+      setExpenses([]);
       setError(
-        t("Saved expenses could not be loaded.", "无法读取已保存的支出。"),
+        lang === "zh"
+          ? "无法读取共享账目，请检查网络或成员权限后重试。"
+          : "Couldn't load shared expenses. Check your connection or membership, then retry.",
       );
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }
+  }, [lang]);
   useEffect(() => {
     void refresh();
+    const focus = () => {
+      if (navigator.onLine) void refresh();
+    };
+    const connected = () => {
+      setOnline(true);
+      void refresh();
+    };
+    const disconnected = () => {
+      setOnline(false);
+      setEditing(undefined);
+      setDeleteId(undefined);
+      setExpenses([]);
+    };
+    window.addEventListener("focus", focus);
+    window.addEventListener("online", connected);
+    window.addEventListener("offline", disconnected);
+    return () => {
+      window.removeEventListener("focus", focus);
+      window.removeEventListener("online", connected);
+      window.removeEventListener("offline", disconnected);
+    };
+  }, [refresh]);
+  useEffect(() => {
+    let active = true;
+    void new LocalStorageExpenseRepository()
+      .getExpenses()
+      .then((data) => {
+        if (active) setLegacy(data);
+      })
+      .catch(() => {
+        if (active) setLegacyError(true);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
+  useEffect(() => {
+    if (requestedTarget && !loading && !error && online && travellersReady)
+      setEditing(null);
+  }, [requestedTarget, loading, error, online, travellersReady]);
+  function closeForm() {
+    setEditing(undefined);
+    if (searchParams.has("add"))
+      setSearchParams(
+        (params) => {
+          const next = new URLSearchParams(params);
+          next.delete("add");
+          return next;
+        },
+        { replace: true },
+      );
+  }
   const summary = expenseSummary(expenses, travellers);
   const filtered = expenses
     .filter(
@@ -68,16 +169,79 @@ export function Expenses() {
         (person === "all" || e.paidBy === person) &&
         (currency === "all" || e.currency === currency),
     )
+    .filter(
+      (e) =>
+        !linkFilter ||
+        (linkFilter === "unlinked"
+          ? !e.linkedItemId
+          : e.linkedItemId === linkFilter),
+    )
     .sort((a, b) => b.date.localeCompare(a.date));
   const name = (id: string) =>
     travellers.find((p) => p.id === id)?.displayName ?? id;
   async function remove(id: string) {
+    if (deleting) return;
+    setDeleting(true);
     try {
-      await expenseRepository.deleteExpense(id);
+      await expenseRepository.deleteExpense(
+        id,
+        expenses.find((e) => e.id === id)?.version,
+      );
       setDeleteId(undefined);
       await refresh();
+    } catch (err) {
+      setError(
+        err instanceof ExpenseConflictError
+          ? t(
+              "This expense has changed. Refresh before deleting.",
+              "这笔账目已被修改，请刷新后再删除。",
+            )
+          : t(
+              "Could not delete the expense. Check your connection and access.",
+              "删除失败，请检查网络和成员权限。",
+            ),
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+  function downloadBackup() {
+    const url = URL.createObjectURL(
+      new Blob([expenseBackup(expenses, travellers)], {
+        type: "application/json",
+      }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `japan-2026-expenses-${japanDate()}.json`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  const pendingLegacy = legacy.filter(
+    (e) => !expenses.some((saved) => saved.id === e.id),
+  );
+  async function importLegacy() {
+    if (importing) return;
+    setImporting(true);
+    setStatus("");
+    try {
+      await expenseRepository.importExpenses(pendingLegacy);
+      await refresh();
+      setStatus(
+        t(
+          "Local expenses imported. Your original device copy is kept.",
+          "本地账目已导入，原始设备副本仍保留。",
+        ),
+      );
     } catch {
-      setError(t("Could not delete the expense.", "无法删除此支出。"));
+      setError(
+        t(
+          "Import failed. Your local expenses are still on this device.",
+          "导入失败，本地账目仍保留在此设备。",
+        ),
+      );
+    } finally {
+      setImporting(false);
     }
   }
   return (
@@ -88,7 +252,7 @@ export function Expenses() {
         subtitle={t("Spend together. Keep it simple.", "一起旅行，轻松记账。")}
         action={
           <button
-            disabled={loading || !!error}
+            disabled={loading || !!error || !online || !travellersReady}
             className="button primary"
             onClick={() => setEditing(null)}
           >
@@ -97,6 +261,78 @@ export function Expenses() {
           </button>
         }
       />
+      <div className="ledger-toolbar">
+        <div>
+          <span className="confirmed">
+            {t("Private shared ledger", "成员共享账本")}
+          </span>
+          <p className="auth-email muted">{session?.user.email}</p>
+        </div>
+        <div className="ledger-actions">
+          <button
+            className="button small"
+            disabled={refreshing || !online}
+            onClick={() => void refresh()}
+          >
+            <RefreshCw size={16} />
+            {t("Refresh", "刷新")}
+          </button>
+          <button
+            className="button small"
+            disabled={
+              loading || refreshing || !!error || !online || !travellersReady
+            }
+            onClick={downloadBackup}
+          >
+            <Download size={16} />
+            {t("Export backup", "导出备份")}
+          </button>
+          <SignOut />
+        </div>
+      </div>
+      {travellersError && (
+        <p className="error" role="alert">
+          {t("Couldn't load traveller names.", "无法读取旅伴昵称。")}{" "}
+          <button className="text-link" onClick={reloadTravellers}>
+            {t("Try again", "重试")}
+          </button>
+        </p>
+      )}
+      {!online && (
+        <p className="soft-panel ledger-notice" role="status">
+          {t(
+            "Reconnect to view and record shared expenses. Offline entries aren't saved.",
+            "请联网后查看和记录共享账目，离线时无法保存。",
+          )}
+        </p>
+      )}
+      {pendingLegacy.length > 0 && !loading && !error && (
+        <section className="soft-panel ledger-notice">
+          <p>
+            {t(
+              `${pendingLegacy.length} expenses from the earlier version are saved on this device. Import them to share with trip members.`,
+              `此设备保留了旧版本的${pendingLegacy.length}笔账目，导入后旅行成员即可共享。`,
+            )}
+          </p>
+          <button
+            className="button small"
+            disabled={importing || !online}
+            onClick={() => void importLegacy()}
+          >
+            <Upload size={16} />
+            {t("Import local expenses", "导入本地账目")}
+          </button>
+        </section>
+      )}
+      {legacyError && (
+        <p className="muted small-copy">
+          {t(
+            "Earlier device records couldn't be read; they haven't been removed.",
+            "无法读取旧版本的本地账目，原记录未被删除。",
+          )}
+        </p>
+      )}
+      {status && <p role="status">{status}</p>}
       <Tabs
         value={tab}
         onChange={setTab}
@@ -115,7 +351,7 @@ export function Expenses() {
         <p>{t("Loading expenses…", "正在读取支出…")}</p>
       ) : (
         <>
-          {tab === "list" && (
+          {online && !error && tab === "list" && (
             <>
               <div className="expense-filters">
                 <label className="sr-only" htmlFor="category-filter">
@@ -161,6 +397,33 @@ export function Expenses() {
                     <option key={c}>{c}</option>
                   ))}
                 </select>
+                <label className="sr-only" htmlFor="linked-filter">
+                  {t("Filter linked item", "按关联项目筛选")}
+                </label>
+                <select
+                  id="linked-filter"
+                  value={linkFilter}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchParams(
+                      (params) => {
+                        const next = new URLSearchParams(params);
+                        if (value) next.set("linked", value);
+                        else next.delete("linked");
+                        return next;
+                      },
+                      { replace: true },
+                    );
+                  }}
+                >
+                  <option value="">
+                    {t("All itinerary items", "全部关联项目")}
+                  </option>
+                  <option value="unlinked">
+                    {t("Unlinked expenses", "未关联行程")}
+                  </option>
+                  <ExpenseTargetOptions />
+                </select>
                 <span className="muted">
                   {filtered.length} {t("expenses", "笔支出")}
                 </span>
@@ -185,6 +448,17 @@ export function Expenses() {
                           {t(cat.en, cat.zh)}
                           {e.note && " · " + e.note}
                         </span>
+                        {getExpenseTarget(e.linkedItemId) && (
+                          <Link
+                            className="expense-link"
+                            to={getExpenseTarget(e.linkedItemId)!.href}
+                          >
+                            {getExpenseTarget(e.linkedItemId)!.title[lang]}
+                            {e.itemPaidInFull
+                              ? ` · ${t("Paid in full", "已付清")}`
+                              : ""}
+                          </Link>
+                        )}
                       </div>
                       <span
                         className="person-badge"
@@ -229,6 +503,7 @@ export function Expenses() {
                           <button
                             className="button danger small"
                             onClick={() => remove(e.id)}
+                            disabled={deleting || !online}
                           >
                             {t("Delete", "删除")}
                           </button>
@@ -258,6 +533,7 @@ export function Expenses() {
                     {!expenses.length && (
                       <button
                         className="button primary"
+                        disabled={!online || !travellersReady || !!error}
                         onClick={() => setEditing(null)}
                       >
                         <Plus size={16} />
@@ -269,7 +545,7 @@ export function Expenses() {
               </div>
             </>
           )}
-          {tab === "summary" && (
+          {online && !error && tab === "summary" && (
             <>
               <div className="currency-totals">
                 {(["JPY", "NZD", "CNY"] as Currency[]).map((c) => (
@@ -309,7 +585,7 @@ export function Expenses() {
               </p>
             </>
           )}
-          {tab === "split" && (
+          {online && !error && tab === "split" && (
             <>
               <div className="section-heading">
                 <h2>{t("A simple way to settle", "轻松结清")}</h2>
@@ -349,17 +625,31 @@ export function Expenses() {
               </p>
             </>
           )}
-          <div className="expense-total">
-            <div>
-              <span>{t("Total trip spending", "旅行总支出")}</span>
-              <small>
-                {t("Converted to JPY · All expenses", "折合日元 · 所有支出")}
-              </small>
+          {online && !error && (
+            <div className="expense-total">
+              <div>
+                <span>{t("Total trip spending", "旅行总支出")}</span>
+                <small>
+                  {t(
+                    "All expenses · Reference conversion",
+                    "所有支出 · 参考折算",
+                  )}
+                </small>
+              </div>
+              <div className="expense-total-values">
+                <strong>
+                  {money(summary.total, "JPY", lang)} <small>JPY</small>
+                </strong>
+                <div className="expense-total-cny">
+                  <span>{t("Approx. in Chinese yuan", "折合人民币")}</span>
+                  <strong>
+                    {money(convertedExpenseTotal(expenses, "CNY"), "CNY", lang)}{" "}
+                    <small>CNY</small>
+                  </strong>
+                </div>
+              </div>
             </div>
-            <strong>
-              {money(summary.total)} <small>JPY</small>
-            </strong>
-          </div>
+          )}
           <p className="fx-note">
             {t("Manual planning rates", "手动参考汇率")}: 1 NZD = ¥
             {exchangeRates.rates.NZD} · 1 CNY = ¥{exchangeRates.rates.CNY}.{" "}
@@ -372,10 +662,12 @@ export function Expenses() {
       )}
       {editing !== undefined && (
         <ExpenseForm
+          key={editing?.id ?? requestedTarget?.id ?? "new"}
           expense={editing}
-          onClose={() => setEditing(undefined)}
+          initialTarget={requestedTarget}
+          onClose={closeForm}
           onSaved={async () => {
-            setEditing(undefined);
+            closeForm();
             await refresh();
           }}
         />
@@ -385,14 +677,23 @@ export function Expenses() {
 }
 function ExpenseForm({
   expense,
+  initialTarget,
   onClose,
   onSaved,
 }: {
   expense: Expense | null;
+  initialTarget?: ExpenseTarget;
   onClose: () => void;
   onSaved: () => Promise<void>;
 }) {
-  const { t, travellers } = useApp();
+  const { t, lang, travellers } = useApp();
+  const { member } = useAuth();
+  const [linkedItemId, setLinkedItemId] = useState(
+    expense?.linkedItemId ?? initialTarget?.id ?? "",
+  );
+  const [itemPaidInFull, setItemPaidInFull] = useState(
+    expense?.itemPaidInFull ?? false,
+  );
   const dialog = useRef<HTMLDialogElement>(null);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -440,6 +741,14 @@ function ExpenseForm({
       date: String(f.get("date")),
       participantIds: participants,
       note: String(f.get("note")).trim(),
+      linkedItemId: linkedItemId || undefined,
+      itemPaidInFull: !!linkedItemId && itemPaidInFull,
+      version: expense?.version,
+      shares:
+        expense?.shares &&
+        Object.keys(expense.shares).every((id) => participants.includes(id))
+          ? expense.shares
+          : undefined,
     };
     if (!data.description) {
       setError(t("Add a description.", "请填写说明。"));
@@ -451,12 +760,17 @@ function ExpenseForm({
         ? expenseRepository.updateExpense(data)
         : expenseRepository.addExpense(data));
       await onSaved();
-    } catch {
+    } catch (err) {
       setError(
-        t(
-          "Could not save. Your browser storage may be full or unavailable.",
-          "保存失败，浏览器存储可能已满或不可用。",
-        ),
+        err instanceof ExpenseConflictError
+          ? t(
+              "Another member changed this expense. Close this form, refresh the list and edit the latest version.",
+              "其他成员已修改这笔账目，请关闭表单、刷新列表后再编辑。",
+            )
+          : t(
+              "Couldn't save. Check your connection and member access, then retry.",
+              "保存失败，请检查网络和成员权限后重试。",
+            ),
       );
       setSaving(false);
     }
@@ -497,7 +811,7 @@ function ExpenseForm({
             name="description"
             required
             maxLength={120}
-            defaultValue={expense?.description}
+            defaultValue={expense?.description ?? initialTarget?.title[lang]}
             placeholder={t(
               "e.g. Lunch at Sankaku Market",
               "例如：三角市场午餐",
@@ -535,7 +849,12 @@ function ExpenseForm({
         <div className="form-row">
           <label>
             {t("Category", "类别")}
-            <select name="category" defaultValue={expense?.category ?? "food"}>
+            <select
+              name="category"
+              defaultValue={
+                expense?.category ?? initialTarget?.category ?? "food"
+              }
+            >
               {categories.map((c) => (
                 <option value={c.id} key={c.id}>
                   {t(c.en, c.zh)}
@@ -554,10 +873,51 @@ function ExpenseForm({
           </label>
         </div>
         <label>
+          {t(
+            "Link to itinerary / accommodation (optional)",
+            "关联行程／住宿（可选）",
+          )}
+          <select
+            value={linkedItemId}
+            onChange={(e) => {
+              setLinkedItemId(e.target.value);
+              setItemPaidInFull(false);
+            }}
+          >
+            <option value="">{t("No linked item", "不关联项目")}</option>
+            <ExpenseTargetOptions />
+          </select>
+        </label>
+        {!!linkedItemId && (
+          <label className="paid-in-full-choice">
+            <input
+              type="checkbox"
+              checked={itemPaidInFull}
+              onChange={(e) => setItemPaidInFull(e.target.checked)}
+            />
+            <span>
+              {t(
+                "This payment completes the item's bill",
+                "此笔付款后，该项目已全部付清",
+              )}
+            </span>
+          </label>
+        )}
+        {!!linkedItemId && (
+          <p className="muted small-copy">
+            {t(
+              "Leave unchecked for a deposit or partial payment. Only record money already paid.",
+              "订金或部分付款请勿勾选。这里只记录实际已支付的金额。",
+            )}
+          </p>
+        )}
+        <label>
           {t("Paid by", "付款人")}
           <select
             name="paidBy"
-            defaultValue={expense?.paidBy ?? travellers[0].id}
+            defaultValue={
+              expense?.paidBy ?? member?.traveller_id ?? travellers[0].id
+            }
           >
             {travellers.map((p) => (
               <option key={p.id} value={p.id}>

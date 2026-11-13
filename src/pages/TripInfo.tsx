@@ -5,12 +5,16 @@ import { useState, type FormEvent } from "react";
 import { Users, Plane, Bus, Check, Info } from "lucide-react";
 import { useApp } from "../components/AppContext";
 import { PageHeading } from "../components/UI";
+import { useAuth } from "../components/AuthContext";
 export function TripInfo() {
-  const { t, lang, travellers, saveTravellers } = useApp();
+  const { t, lang, travellers, travellersReady, saveTravellers } = useApp();
+  const { member } = useAuth();
   const [status, setStatus] = useState("");
+  const [saving, setSaving] = useState(false);
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
+    setSaving(true);
     try {
       await saveTravellers(
         travellers.map((p) => ({
@@ -18,9 +22,11 @@ export function TripInfo() {
           displayName: String(data.get(p.id)).trim() || p.displayName,
         })),
       );
-      setStatus(t("Names saved on this device.", "昵称已保存在此设备。"));
+      setStatus(t("Names saved for the trip.", "旅伴昵称已同步保存。"));
     } catch {
       setStatus(t("Could not save names.", "无法保存昵称。"));
+    } finally {
+      setSaving(false);
     }
   }
   return (
@@ -93,37 +99,54 @@ export function TripInfo() {
               "使用昵称，让旅程亲切又私密。",
             )}
           </p>
-          <form onSubmit={save} className="traveller-form">
-            {travellers.map((p, i) => (
-              <label key={p.id}>
-                {t(`Traveller ${i + 1}`, `旅行者 ${i + 1}`)}
-                <input
-                  name={p.id}
-                  defaultValue={p.displayName}
-                  required
-                  maxLength={30}
-                />
-              </label>
-            ))}
-            <button className="button primary" type="submit">
-              {t("Save names", "保存昵称")}
-            </button>
-            <p role="status">{status}</p>
-          </form>
+          {member && travellersReady ? (
+            <form
+              key={travellers.map((p) => p.displayName).join("|")}
+              onSubmit={save}
+              className="traveller-form"
+            >
+              {travellers.map((p, i) => (
+                <label key={p.id}>
+                  {t(`Traveller ${i + 1}`, `旅行者 ${i + 1}`)}
+                  <input
+                    name={p.id}
+                    defaultValue={p.displayName}
+                    required
+                    maxLength={30}
+                  />
+                </label>
+              ))}
+              <button
+                className="button primary"
+                type="submit"
+                disabled={saving}
+              >
+                {t("Save names", "保存昵称")}
+              </button>
+              <p role="status">{status}</p>
+            </form>
+          ) : (
+            <Link to="/expenses" className="text-link">
+              {t(
+                "Trip members can sign in to manage traveller names.",
+                "旅行成员登录后可以管理旅伴昵称。",
+              )}
+            </Link>
+          )}
         </section>
         <section className="soft-panel info-card">
           <Info size={24} />
           <h2>{t("A few useful things", "一些实用提醒")}</h2>
           <p>
             {t(
-              "Your expenses, shopping checklist, notes and traveller names are saved in this browser on this device.",
-              "支出、购物清单、笔记和旅伴昵称保存在当前设备的浏览器中。",
+              "Expenses and traveller names are shared securely with signed-in trip members. An internet connection is needed to load or save the ledger.",
+              "支出和旅伴昵称由已登录的旅行成员共享。读取和保存账本需要联网。",
             )}
           </p>
           <p>
             {t(
-              "Other family members will have their own local records. Clearing browser data removes saved records.",
-              "其他家人使用各自的本地记录。清除浏览器数据会删除保存的记录。",
+              "Shopping checklists and daily notes stay on this device. Clearing browser data removes those local records.",
+              "购物清单和每日笔记仍保存在当前设备，清除浏览器数据会删除这些本地记录。",
             )}
           </p>
           <p>

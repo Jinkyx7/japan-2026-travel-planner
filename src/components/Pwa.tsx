@@ -169,8 +169,8 @@ export function PwaNotifications() {
           <span>
             {cached
               ? t(
-                  "You're offline. Saved plans are available; maps and external links need internet.",
-                  "当前离线。可查看已保存的行程；地图和外部链接需要联网。",
+                  "You're offline. Saved plans are available; maps, the shared ledger and external links need internet.",
+                  "当前离线。可查看已保存的行程；地图、共享账本和外部链接需要联网。",
                 )
               : t(
                   "You're offline. Reconnect to save your plans for offline use.",
@@ -340,8 +340,8 @@ export function InstallApp() {
       </div>
       <p className="pwa-footnote">
         {t(
-          "Google Maps and external links need internet. Expenses and checklists stay on this device; they don't sync between phones.",
-          "Google Maps 和外部链接需要联网。支出与清单保存在当前设备，不会在手机之间自动同步。",
+          "Google Maps, the shared ledger and external links need internet. Trip members share expenses; shopping checklists and daily notes stay on this device.",
+          "Google Maps、共享账本和外部链接需要联网。账目由旅行成员共享，购物清单和每日笔记仍保存在当前设备。",
         )}
       </p>
     </section>

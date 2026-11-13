@@ -2,6 +2,8 @@ import { useApp } from "./AppContext";
 import { dateLabel } from "../lib/trip";
 import type { Accommodation } from "../data/accommodations";
 import type { Flight } from "../data/flights";
+import { LinkedPaymentDetails } from "./LinkedPayments";
+import { stayExpenseId } from "../lib/expenseLinks";
 export function StayDetails({ stay }: { stay: Accommodation }) {
   const { t, lang } = useApp();
   return (
@@ -31,7 +33,7 @@ export function StayDetails({ stay }: { stay: Accommodation }) {
           [t("Guests", "住客"), stay.guests[lang]],
           [t("Meals", "餐食"), stay.meals[lang]],
           [t("Facilities", "设施"), stay.amenities[lang]],
-          [t("Payment", "付款"), stay.payment[lang]],
+          [t("Booking payment terms", "预订付款说明"), stay.payment[lang]],
         ].map(([label, value]) => (
           <div key={label}>
             <dt>{label}</dt>
@@ -55,6 +57,7 @@ export function StayDetails({ stay }: { stay: Accommodation }) {
           ))}
         </div>
       )}
+      <LinkedPaymentDetails targetId={stayExpenseId(stay)} />
     </div>
   );
 }

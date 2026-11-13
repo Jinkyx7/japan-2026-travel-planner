@@ -16,6 +16,8 @@ import {
 import { useEffect } from "react";
 import { useApp } from "./AppContext";
 import { InstallApp, PwaNotifications } from "./Pwa";
+import { useAuth } from "./AuthContext";
+import { SignOut, ChangePassword } from "./MemberAccess";
 const navigation = [
   { to: "/", en: "Home", zh: "首页", icon: House },
   { to: "/itinerary", en: "Itinerary", zh: "行程", icon: CalendarDays },
@@ -111,6 +113,7 @@ export function Layout() {
 }
 export function More() {
   const { t, lang, setLang } = useApp();
+  const { session, member } = useAuth();
   return (
     <div className="narrow">
       <div className="page-heading">
@@ -118,6 +121,33 @@ export function More() {
         <h1>{t("A few more things", "旅行小工具")}</h1>
       </div>
       <InstallApp />
+      <section className="panel account-card">
+        <div>
+          <strong>{t("Travel account", "旅行账号")}</strong>
+          <p className="auth-email">
+            {session?.user.email ??
+              t(
+                "Sign in to access shared expenses.",
+                "登录后查看家庭共享账本。",
+              )}
+          </p>
+          {session && (
+            <p className="muted">
+              {member
+                ? t("Trip member", "旅行成员")
+                : t("Not a trip member", "尚未加入旅行")}
+            </p>
+          )}
+        </div>
+        {session ? (
+          <SignOut />
+        ) : (
+          <Link className="button" to="/expenses">
+            {t("Sign in", "登录")}
+          </Link>
+        )}
+      </section>
+      {session && member && <ChangePassword />}
       <div className="panel menu-list">
         {[
           ...navigation.slice(4),

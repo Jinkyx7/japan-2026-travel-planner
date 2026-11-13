@@ -90,4 +90,9 @@ export type Expense = {
   participantIds: string[];
   shares?: Record<string, number>;
   note?: string;
+  linkedItemId?: string;
+  /** An explicit assertion that this payment completes the linked item's bill. */
+  itemPaidInFull?: boolean;
+  /** Server revision used to detect simultaneous edits. */
+  version?: number;
 };

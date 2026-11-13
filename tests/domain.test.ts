@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { expenseSummary } from "../src/lib/expenses";
+import { expenseSummary, convertedExpenseTotal } from "../src/lib/expenses";
 import { tripProgress, japanDate } from "../src/lib/trip";
 import { initialTravellers } from "../src/data/travellers";
 import { itinerary } from "../src/data/itinerary";
@@ -75,6 +75,25 @@ test("payer can be outside participants; custom weights supported", () => {
     s.balances.map((p) => p.net),
     [100, -25, -75],
   );
+});
+test("CNY trip total converts original amounts without whole-yen rounding", () => {
+  const payments = [
+    expense({ amount: 10000, currency: "JPY" }),
+    expense({ id: "second-payment", amount: 100.01, currency: "CNY" }),
+  ];
+  assert.equal(convertedExpenseTotal(payments, "CNY"), 576.2);
+  assert.equal(
+    convertedExpenseTotal(
+      [expense({ amount: 100.01, currency: "CNY" })],
+      "CNY",
+    ),
+    100.01,
+  );
+  assert.equal(
+    convertedExpenseTotal([expense({ amount: 100, currency: "NZD" })], "CNY"),
+    428.57,
+  );
+  assert.equal(convertedExpenseTotal([], "CNY"), 0);
 });
 test("trip countdown includes all 11 days and uses Japan midnight", () => {
   assert.deepEqual(tripProgress("2026-12-18"), { phase: "before", days: 1 });

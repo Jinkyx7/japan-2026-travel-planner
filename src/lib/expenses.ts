@@ -9,6 +9,19 @@ export function money(n: number, c: Currency = "JPY", lang = "en") {
     maximumFractionDigits: currencyDigits(c),
   }).format(n);
 }
+export function convertedExpenseTotal(expenses: Expense[], currency: Currency) {
+  // Convert original amounts directly; the JPY settlement rounds each transaction
+  // to whole yen and would introduce extra rounding if reused for CNY totals.
+  const total = expenses.reduce(
+    (sum, expense) =>
+      sum +
+      (expense.amount * exchangeRates.rates[expense.currency]) /
+        exchangeRates.rates[currency],
+    0,
+  );
+  const scale = 10 ** currencyDigits(currency);
+  return Math.round((total + Number.EPSILON) * scale) / scale;
+}
 export function expenseSummary(expenses: Expense[], travellers: Traveller[]) {
   const totals: Record<Currency, number> = { JPY: 0, NZD: 0, CNY: 0 };
   const balances = travellers.map((t) => ({ ...t, paid: 0, owed: 0, net: 0 }));
