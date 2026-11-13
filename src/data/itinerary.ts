@@ -1105,11 +1105,62 @@ const plannedDays: TripDay[] = [
   },
 ];
 
+// Short timeline previews; full notes remain on each stop's detail page.
+const timelineSummaries: Record<string, Localized> = {
+  "dec-19/arrival": l(
+    "9C8791 · Shanghai → New Chitose.",
+    "9C8791 · 上海 → 新千岁。",
+  ),
+  "dec-19/airport-to-hotel": l(
+    "JR Airport train to Sapporo, then walk to the hotel.",
+    "乘JR机场列车到札幌，再步行前往酒店。",
+  ),
+  "dec-19/market": l("Odori Park Nishi 1–2.", "大通公园西1～2丁目。"),
+  "dec-19/lights": l(
+    "A walk through the Odori light displays.",
+    "漫步大通会场，欣赏灯饰。",
+  ),
+  "dec-19/return": l(
+    "Enjoy Ekimae-dori lights on the walk to the hotel.",
+    "沿站前通赏灯，步行返回酒店。",
+  ),
+  "dec-20/morning": l(
+    "Leave luggage at Hotel Gracery after checkout.",
+    "退房后将行李寄存在Hotel Gracery。",
+  ),
+  "dec-21/to-factory": l("Allow 35 minutes for the walk.", "步行预留35分钟。"),
+  "dec-21/factory-tree": l(
+    "Arrive early for the five-minute music and light show.",
+    "提前到中庭，观看约5分钟的音乐灯光秀。",
+  ),
+  "dec-21/return-susukino": l(
+    "Walk back to Susukino for dinner.",
+    "步行返回薄野，准备吃晚餐。",
+  ),
+  "dec-25/airbnb-to-airport": l(
+    "Take a JR Airport train from Sapporo Station.",
+    "从札幌站乘JR机场列车。",
+  ),
+  "dec-25/narita-to-airbnb": l(
+    "Skyliner to Nippori, then JR to Ikebukuro.",
+    "Skyliner到日暮里，再转JR至池袋。",
+  ),
+  "dec-29/checkout": l(
+    "JR to Nippori, then Skyliner to Narita T2.",
+    "JR到日暮里，再转Skyliner至成田T2。",
+  ),
+  "dec-29/connection": l(
+    "Connect at Pudong T1 for Wenzhou.",
+    "在浦东T1转机前往温州。",
+  ),
+};
 export const itinerary: TripDay[] = plannedDays.map((day) => ({
   ...day,
-  items: day.items.map((item) =>
-    day.id === "dec-29" && item.id === "checkout"
-      ? airportTransfers.tokyoDeparture
-      : item,
-  ),
+  items: day.items.map((original) => {
+    const item =
+      day.id === "dec-29" && original.id === "checkout"
+        ? airportTransfers.tokyoDeparture
+        : original;
+    return { ...item, summary: timelineSummaries[`${day.id}/${item.id}`] };
+  }),
 }));

@@ -10,7 +10,6 @@
 
 Embedded Google Maps was not exercised with a real key because none was supplied. The no-key fallback and outbound place links were verified. API keys, referrer restrictions and billing are hosting configuration tasks. FX rates remain illustrative manual settings; Tokyo placeholder days remain intentionally open. No deployment or Git push was performed.
 
-
 ## Destination photos and stop details update
 
 Added local destination photography with source/license credits, contextual stop detail routes, and food markers on combined day maps. Kept Notes. Verified hotel details in English/Chinese at 390px without overflow, direct detail reload, restaurant fallback selection, and Plan B preservation on return. Eight tests cover existing functionality plus deduplication and timeline-number preservation. Local map uses the no-key fallback; the live Google Maps path is checked after deployment.
@@ -41,3 +40,18 @@ Added local destination photography with source/license credits, contextual stop
 - Google Maps links were opened and checked individually; see map-route-review.md. Corrected ambiguous street/private-stay references, separated the JR station from the north-exit meeting area, and removed public-transit links for reserved hotel shuttles.
 - Grouped Otaru stops retain their related places on the map and in details. Long time ranges remain intact on mobile.
 - Final production build and all 16 tests passed. English/Chinese browser review confirmed revised schedules, 18:00 show, matching directions links, and no horizontal overflow at 566px. Booking documents and private addresses remain outside the repository.
+
+## Local Leaflet map trial — 13 November 2026 (superseded)
+
+- Replaced the embedded Google SDK with stable Leaflet 1.9.4 and attributed OpenStreetMap raster tiles. Leaflet loads on demand; no Google Maps scripts or key are needed. Existing outbound Google Maps place/directions links remain unchanged.
+- Reuses the map instance across area, language and selected-marker changes. Preserves the viewport through language changes; refits bounds on area changes and container resize. Numbering follows the shared Place list; restaurant icons retain their distinct colour and stacking order. Keyboard labels and zoom controls are bilingual.
+- Browser checks: tiles render, zoom controls and dragging work, Otaru area filter, daily Otaru map, restaurant selection, English/Chinese selection-card updates, empty Tokyo restaurant map and recovery to Sapporo, and no horizontal overflow at 390px. Google Maps link on the selected restaurant is preserved. Fresh browser console has no errors.
+- Production build and all 16 existing tests passed. The tile service is best-effort and must follow its usage policy; tile URL/attribution are configurable. This remains a local trial and has not been pushed or deployed.
+
+## Google Maps restored and optimized locally — 13 November 2026
+
+- Following the user's comparison, removed the Leaflet dependency, tile configuration and styles. Restored Google Maps using the existing ignored local browser key; no credential was printed or committed. Outbound place/directions URLs are unchanged.
+- Map initialization is separate from marker updates. Each mounted panel keeps one map, shares one SDK script, reuses retained marker elements, and removes obsolete listeners/markers. Language and selection preserve viewport; area changes refit it. Added fractional zoom, a flat view, direct desktop wheel gestures, cooperative touch gestures, and resize handling. Marker click handlers follow Google's current accessible `gmp-click` API.
+- Browser verification with the real local key: Google tiles loaded; Otaru filtering retained initialization count 1; zoom controls and dragging changed the viewport; switching Chinese/English preserved the exact center and zoom; LeTAO food marker opened its localized details/link. Tokyo's empty food map recovered to Sapporo with the same instance. The 21 December map showed all 8 markers. At 390px the page had no horizontal overflow, and one Google SDK script was present.
+- Public Vercel `/map` and the 21 December Map tab both loaded tiles and markers without console errors during the read-only check; the previously reported production failure was not reproduced. No production configuration was changed.
+- Production build and all 16 tests pass. Existing pending short bilingual timeline summaries are preserved. These changes are local only: no commit, push or deployment.

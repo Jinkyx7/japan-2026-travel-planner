@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MapPin, ArrowUpRight, Utensils } from "lucide-react";
 import type { Place } from "../types";
-import { loadGoogleMaps } from "../services/mapService";
+import { loadGoogleMaps } from "../services/googleMapsLoader";
 import { useApp } from "./AppContext";
 import { MapsLink, PlaceName } from "./UI";
 export function PlaceMap({
@@ -17,78 +17,208 @@ export function PlaceMap({
   const [state, setState] = useState<"loading" | "ready" | "fallback">(
     import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? "loading" : "fallback",
   );
-  const ids = places.map((p) => p.id).join(",");
+  const [initialized, setInitialized] = useState(0);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const boundsRef = useRef<google.maps.LatLngBounds | null>(null);
+  const viewportKeyRef = useRef("");
+  const markersRef = useRef(
+    new Map<
+      string,
+      {
+        marker: google.maps.marker.AdvancedMarkerElement;
+        pin: HTMLDivElement;
+        appearance: string;
+        removeClickListener: () => void;
+      }
+    >(),
+  );
+
+  // Create once per mounted panel. React updates never run during pan/zoom.
   useEffect(() => {
-    if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) return;
+    const root = ref.current;
+    if (!root || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) return;
     let disposed = false;
-    let markers: google.maps.marker.AdvancedMarkerElement[] = [];
-    const timer = setTimeout(() => {
+    let authFailed = false;
+    let map: google.maps.Map | undefined;
+    let resize: ResizeObserver | undefined;
+    let tilesListener: google.maps.MapsEventListener | undefined;
+    let idleListener: google.maps.MapsEventListener | undefined;
+    const markers = markersRef.current;
+    const timer = window.setTimeout(() => {
       if (!disposed) setState("fallback");
-    }, 12000);
+    }, 20000);
     const authFail = () => {
+      authFailed = true;
+      window.clearTimeout(timer);
       if (!disposed) setState("fallback");
     };
     window.addEventListener("japan-maps-auth-failure", authFail);
     loadGoogleMaps()
       .then(() => {
-        if (disposed || !ref.current) return;
-        const points = places.filter((p) => p.coordinates);
-        const map = new google.maps.Map(ref.current, {
-          center: points[0]?.coordinates ?? { lat: 43.06, lng: 141.35 },
+        if (disposed || authFailed) return;
+        map = new google.maps.Map(root, {
+          center: { lat: 43.06, lng: 141.35 },
           zoom: 12,
           mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
           disableDefaultUI: true,
           zoomControl: true,
-          gestureHandling: "cooperative",
+          isFractionalZoomEnabled: true,
+          tilt: 0,
+          heading: 0,
+          tiltInteractionEnabled: false,
+          headingInteractionEnabled: false,
+          // Direct wheel zoom on desktop; allow normal page scrolling on phones.
+          gestureHandling: window.matchMedia("(pointer: coarse)").matches
+            ? "cooperative"
+            : "greedy",
         });
-        const bounds = new google.maps.LatLngBounds();
-        markers = points.map((p) => {
-          bounds.extend(p.coordinates!);
-          const food = p.category === "restaurant";
-          const pin = document.createElement("div");
-          pin.className = "place-marker" + (food ? " food-marker" : "");
-          if (food) {
-            pin.innerHTML =
-              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v19M20 22V3c-4 3-4 9 0 9"/></svg>';
+        mapRef.current = map;
+        viewportKeyRef.current = "";
+        tilesListener = map.addListener("tilesloaded", () => {
+          if (!disposed && !authFailed) {
+            window.clearTimeout(timer);
+            setState("ready");
           }
-          if (numbered || !food) {
-            const label = document.createElement("span");
-            label.textContent = numbered
-              ? String(places.findIndex((place) => place.id === p.id) + 1)
-              : "•";
-            pin.append(label);
-          }
-          const marker = new google.maps.marker.AdvancedMarkerElement({
-            map,
-            position: p.coordinates,
-            title: `${food ? t("Food", "美食") : t("Stop", "地点")}: ${lang === "en" ? p.nameEn : p.nameZh}`,
-            content: pin,
-            zIndex: food ? 100 : 1,
+        });
+        if (import.meta.env.DEV) {
+          root.dataset.mapInitializations = String(
+            Number(root.dataset.mapInitializations || 0) + 1,
+          );
+          idleListener = map.addListener("idle", () => {
+            root.dataset.mapZoom = String(map?.getZoom());
+            root.dataset.mapCenter = map?.getCenter()?.toUrlValue();
           });
-          marker.addListener("click", () => setSelected(p.id));
-          return marker;
+        }
+        let width = root.clientWidth;
+        let height = root.clientHeight;
+        resize = new ResizeObserver(() => {
+          if (root.clientWidth === width && root.clientHeight === height)
+            return;
+          width = root.clientWidth;
+          height = root.clientHeight;
+          if (width && height && boundsRef.current)
+            map?.fitBounds(boundsRef.current, 45);
         });
-        if (points.length > 1) map.fitBounds(bounds, 50);
-        setState("ready");
-        clearTimeout(timer);
+        resize.observe(root);
+        setInitialized((version) => version + 1);
       })
-      .catch(() => {
-        if (!disposed) setState("fallback");
-      });
+      .catch(authFail);
     return () => {
       disposed = true;
-      clearTimeout(timer);
-      markers.forEach((m) => (m.map = null));
+      window.clearTimeout(timer);
       window.removeEventListener("japan-maps-auth-failure", authFail);
-    }; // places are stable by their IDs
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ids, lang, numbered]);
+      resize?.disconnect();
+      tilesListener?.remove();
+      idleListener?.remove();
+      for (const entry of markers.values()) {
+        entry.removeClickListener();
+        entry.marker.map = null;
+      }
+      markers.clear();
+      if (map) google.maps.event.clearInstanceListeners(map);
+      mapRef.current = null;
+      boundsRef.current = null;
+      root.replaceChildren();
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!initialized || !map) return;
+    const order = new Map(places.map((p, i) => [p.id, i + 1]));
+    const points = places.filter((p) => p.coordinates);
+    const ids = new Set(points.map((p) => p.id));
+    for (const [id, entry] of markersRef.current) {
+      if (!ids.has(id)) {
+        entry.removeClickListener();
+        entry.marker.map = null;
+        markersRef.current.delete(id);
+      }
+    }
+    const bounds = new google.maps.LatLngBounds();
+    points.forEach((p) => {
+      bounds.extend(p.coordinates!);
+      const food = p.category === "restaurant";
+      const title = `${lang === "en" ? (food ? "Food" : "Stop") : food ? "美食" : "地点"}: ${lang === "en" ? p.nameEn : p.nameZh}`;
+      const label = numbered ? String(order.get(p.id)) : food ? "" : "•";
+      const appearance = `${food}:${label}`;
+      let entry = markersRef.current.get(p.id);
+      if (!entry) {
+        const pin = document.createElement("div");
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+          map,
+          position: p.coordinates,
+          title,
+          gmpClickable: true,
+          zIndex: food ? 100 : 1,
+        });
+        marker.append(pin);
+        const onClick = () => setSelected(p.id);
+        marker.addEventListener("gmp-click", onClick);
+        entry = {
+          marker,
+          pin,
+          appearance: "",
+          removeClickListener: () =>
+            marker.removeEventListener("gmp-click", onClick),
+        };
+        markersRef.current.set(p.id, entry);
+      } else {
+        entry.marker.title = title;
+        const position = entry.marker.position as
+          google.maps.LatLngLiteral | undefined;
+        if (
+          position?.lat !== p.coordinates!.lat ||
+          position?.lng !== p.coordinates!.lng
+        )
+          entry.marker.position = p.coordinates;
+      }
+      if (entry.appearance !== appearance) {
+        entry.marker.zIndex = food ? 100 : 1;
+        entry.pin.className = "place-marker" + (food ? " food-marker" : "");
+        entry.pin.replaceChildren();
+        if (food)
+          entry.pin.innerHTML =
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v19M20 22V3c-4 3-4 9 0 9"/></svg>';
+        if (label) {
+          const text = document.createElement("span");
+          text.textContent = label;
+          entry.pin.append(text);
+        }
+        entry.appearance = appearance;
+      }
+    });
+    boundsRef.current = points.length ? bounds : null;
+    // A label change or selection must never reset the user's viewport.
+    const viewportKey = points
+      .map((p) => `${p.id}:${p.coordinates!.lat},${p.coordinates!.lng}`)
+      .sort()
+      .join("|");
+    if (viewportKey !== viewportKeyRef.current || !viewportKey) {
+      if (points.length > 1) map.fitBounds(bounds, 45);
+      else if (points.length === 1) {
+        map.setCenter(points[0].coordinates!);
+        map.setZoom(15);
+      } else {
+        map.setCenter({ lat: 38, lng: 138 });
+        map.setZoom(5);
+      }
+      viewportKeyRef.current = viewportKey;
+    }
+  }, [initialized, places, lang, numbered]);
+
+  useEffect(() => {
+    for (const [id, entry] of markersRef.current)
+      entry.pin.classList.toggle("selected-map-marker", id === selected);
+  }, [initialized, selected, places, lang, numbered]);
   const current = places.find((p) => p.id === selected);
   return (
     <section className="map-panel" aria-label={t("Places map", "地点地图")}>
       <div
         ref={ref}
         className="google-map"
+        role="region"
+        aria-label={t("Interactive places map", "互动地点地图")}
         style={{ display: state === "fallback" ? "none" : "block" }}
       />
       {state === "fallback" && (
@@ -142,6 +272,11 @@ export function PlaceMap({
       )}
       {state === "loading" && (
         <div className="map-loading">{t("Loading map…", "正在加载地图…")}</div>
+      )}
+      {!places.length && (
+        <p className="map-help">
+          {t("No places planned in this area yet.", "此地区暂无已规划地点。")}
+        </p>
       )}
       {current && (
         <div className="map-place-card">

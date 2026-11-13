@@ -281,7 +281,9 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                         </Link>
                       </h3>
                       {place && <span className="ja">{place.nameJa}</span>}
-                      {item.note && <p>{item.note[lang]}</p>}
+                      {(item.summary ?? item.note) && (
+                        <p>{(item.summary ?? item.note)![lang]}</p>
+                      )}
                       {item.transport && item.kind !== "flight" && (
                         <div className="transport-detail">
                           <p>
@@ -307,8 +309,8 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                           {item.transport.confirmed ? (
                             <p className="map-help">
                               {t(
-                                "Reserved hotel shuttle: follow the meeting instructions in your booking.",
-                                "预约酒店接驳：请按预订中的集合指引乘车。",
+                                "Reserved shuttle · meeting instructions in details.",
+                                "预约酒店接驳 · 集合指引见详情。",
                               )}
                             </p>
                           ) : (
@@ -321,8 +323,8 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
                               ) && (
                                 <p className="map-help">
                                   {t(
-                                    "Directions use Susukino / Ikebukuro Station as the public reference for your stay. Enter your private booking address for the final leg.",
-                                    "住宿导航以薄野站／池袋站为公开参考点；最后一段请填写预订中的准确地址。",
+                                    "Station reference only · see details for the final leg.",
+                                    "车站参考点 · 最后一段路线见详情。",
                                   )}
                                 </p>
                               )}

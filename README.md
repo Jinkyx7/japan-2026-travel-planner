@@ -16,9 +16,9 @@ Open the URL printed by Vite. `npm run build` performs a strict TypeScript check
 
 ## Maps
 
-The app works without credentials: each map panel lists its places with Google Maps outbound links. To enable embedded maps, set `VITE_GOOGLE_MAPS_API_KEY` in `.env.local` or your hosting environment and enable Maps JavaScript API in the Google Cloud project. Restrict the browser key by HTTP referrer and API. `VITE_GOOGLE_MAPS_MAP_ID` accepts your map ID; `DEMO_MAP_ID` is the development default.
+Embedded maps use Google Maps JavaScript API and the same ordered place IDs as the timeline, with separate food icons. Add `VITE_GOOGLE_MAPS_API_KEY` to `.env.local` and restart Vite; configure the same variable in Vercel before deploying. Restrict the browser key to your development/production website URLs and the required APIs. `VITE_GOOGLE_MAPS_MAP_ID` is optional (defaults to Google's demo map ID).
 
-Uses Google's [JavaScript API loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and advanced markers. Markers and timeline stops share ordered place IDs. Network, timeout and authentication errors retain the outbound-link experience. A live API key was not supplied, so the live Google map path needs verification with your configured project.
+The SDK is shared across panels. Each mounted panel keeps one map and reuses markers as filters or language change; language and selection preserve zoom/pan. Desktop wheel zoom is direct, while touch devices use cooperative gestures so the page remains scrollable. Initial tile loading and authorization failures fall back to the places list and outbound Google Maps links. Browser keys are visible in client code; never commit `.env.local`.
 
 ## Features
 

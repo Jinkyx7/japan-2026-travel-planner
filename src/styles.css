@@ -3274,3 +3274,5 @@ textarea {
 .related-stop {
   margin: 16px 0;
 }
+
+.selected-map-marker { outline: 3px solid #d7b46a; outline-offset: 3px; }
