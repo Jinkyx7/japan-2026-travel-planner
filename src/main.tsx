@@ -12,6 +12,7 @@ import { TripInfo } from "./pages/TripInfo";
 import { StopDetail } from "./pages/StopDetail";
 import { Accommodations, AccommodationDetail, Flights } from "./pages/Bookings";
 import { PhotoCredits } from "./pages/PhotoCredits";
+import { PwaProvider } from "./components/Pwa";
 import "./styles.css";
 (window as unknown as { gm_authFailure: () => void }).gm_authFailure = () =>
   window.dispatchEvent(new Event("japan-maps-auth-failure"));
@@ -30,31 +31,33 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AppProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="itinerary" element={<Itinerary />} />
-            <Route path="itinerary/:dayId" element={<DayDetail />} />
-            <Route
-              path="itinerary/:dayId/stops/:itemId"
-              element={<StopDetail />}
-            />
-            <Route path="map" element={<MapPage />} />
-            <Route path="food" element={<Food />} />
-            <Route path="shopping" element={<Shopping />} />
-            <Route path="expenses" element={<Expenses />} />
-            <Route path="accommodation" element={<Accommodations />} />
-            <Route
-              path="accommodation/:placeId"
-              element={<AccommodationDetail />}
-            />
-            <Route path="flights" element={<Flights />} />
-            <Route path="photo-credits" element={<PhotoCredits />} />
-            <Route path="info" element={<TripInfo />} />
-            <Route path="more" element={<More />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
+        <PwaProvider>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="itinerary" element={<Itinerary />} />
+              <Route path="itinerary/:dayId" element={<DayDetail />} />
+              <Route
+                path="itinerary/:dayId/stops/:itemId"
+                element={<StopDetail />}
+              />
+              <Route path="map" element={<MapPage />} />
+              <Route path="food" element={<Food />} />
+              <Route path="shopping" element={<Shopping />} />
+              <Route path="expenses" element={<Expenses />} />
+              <Route path="accommodation" element={<Accommodations />} />
+              <Route
+                path="accommodation/:placeId"
+                element={<AccommodationDetail />}
+              />
+              <Route path="flights" element={<Flights />} />
+              <Route path="photo-credits" element={<PhotoCredits />} />
+              <Route path="info" element={<TripInfo />} />
+              <Route path="more" element={<More />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </PwaProvider>
       </AppProvider>
     </BrowserRouter>
   </React.StrictMode>,

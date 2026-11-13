@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import { useApp } from "./AppContext";
+import { InstallApp, PwaNotifications } from "./Pwa";
 const navigation = [
   { to: "/", en: "Home", zh: "首页", icon: House },
   { to: "/itinerary", en: "Itinerary", zh: "行程", icon: CalendarDays },
@@ -76,6 +77,7 @@ export function Layout() {
           </div>
         </div>
       </header>
+      <PwaNotifications />
       <main id="main" className="main-container">
         <Outlet />
       </main>
@@ -115,6 +117,7 @@ export function More() {
         <div className="eyebrow">JAPAN 2026</div>
         <h1>{t("A few more things", "旅行小工具")}</h1>
       </div>
+      <InstallApp />
       <div className="panel menu-list">
         {[
           ...navigation.slice(4),

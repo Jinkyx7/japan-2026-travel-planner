@@ -3275,4 +3275,145 @@ textarea {
   margin: 16px 0;
 }
 
-.selected-map-marker { outline: 3px solid #d7b46a; outline-offset: 3px; }
+.selected-map-marker {
+  outline: 3px solid #d7b46a;
+  outline-offset: 3px;
+}
+
+/* Installed apps respect notches and the home indicator in either orientation. */
+@media (display-mode: standalone) {
+  .site-header {
+    height: calc(82px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+  }
+  .header-inner {
+    height: 82px;
+  }
+  .main-container {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}
+.pwa-install {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.pwa-install-heading {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.pwa-install-heading img {
+  flex-shrink: 0;
+  border-radius: 13px;
+}
+.pwa-install h2 {
+  font-size: 19px;
+  margin: 0 0 6px;
+}
+.pwa-install-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+.pwa-install details {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 16px;
+}
+.pwa-install summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.pwa-install summary::after {
+  content: "+";
+  margin-left: auto;
+}
+.pwa-install details[open] summary::after {
+  content: "−";
+}
+.pwa-install ol {
+  list-style: decimal;
+  padding-left: 22px;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+.pwa-offline-status,
+.pwa-ready {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--green);
+}
+.pwa-offline-status {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.pwa-offline-status svg,
+.pwa-ready svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.pwa-footnote {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+.offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px max(20px, env(safe-area-inset-left));
+  background: #eef3ef;
+  color: #315546;
+  font-size: 13px;
+}
+.offline-banner svg {
+  flex-shrink: 0;
+}
+.pwa-update {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 60;
+  background: #fff;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 8px 36px #173b2520;
+  width: min(380px, calc(100vw - 40px));
+}
+.pwa-update p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 16px;
+}
+.pwa-actions {
+  display: flex;
+  gap: 10px;
+}
+@media (max-width: 760px) {
+  .pwa-install {
+    padding: 20px;
+  }
+  .pwa-install h2 {
+    font-size: 17px;
+  }
+  .pwa-update {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 760px) and (display-mode: standalone) {
+  .site-header {
+    height: calc(65px + env(safe-area-inset-top));
+  }
+  .header-inner {
+    height: 65px;
+  }
+}

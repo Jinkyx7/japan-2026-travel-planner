@@ -14,8 +14,11 @@ export function PlaceMap({
   const { lang, t } = useApp();
   const ref = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string>();
+  const [online, setOnline] = useState(navigator.onLine);
   const [state, setState] = useState<"loading" | "ready" | "fallback">(
-    import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? "loading" : "fallback",
+    import.meta.env.VITE_GOOGLE_MAPS_API_KEY && navigator.onLine
+      ? "loading"
+      : "fallback",
   );
   const [initialized, setInitialized] = useState(0);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -33,10 +36,29 @@ export function PlaceMap({
     >(),
   );
 
+  useEffect(() => {
+    const connected = () => {
+      setOnline(true);
+      setState(
+        import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? "loading" : "fallback",
+      );
+    };
+    const disconnected = () => {
+      setOnline(false);
+      setState("fallback");
+    };
+    window.addEventListener("online", connected);
+    window.addEventListener("offline", disconnected);
+    return () => {
+      window.removeEventListener("online", connected);
+      window.removeEventListener("offline", disconnected);
+    };
+  }, []);
+
   // Create once per mounted panel. React updates never run during pan/zoom.
   useEffect(() => {
     const root = ref.current;
-    if (!root || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) return;
+    if (!root || !online || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) return;
     let disposed = false;
     let authFailed = false;
     let map: google.maps.Map | undefined;
@@ -120,7 +142,7 @@ export function PlaceMap({
       boundsRef.current = null;
       root.replaceChildren();
     };
-  }, []);
+  }, [online]);
 
   useEffect(() => {
     const map = mapRef.current;

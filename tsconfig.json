@@ -13,7 +13,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": ["vite/client", "google.maps"]
+    "types": ["vite/client", "google.maps", "vite-plugin-pwa/react"]
   },
   "include": ["src", "vite.config.ts"]
 }

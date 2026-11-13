@@ -378,17 +378,7 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
             </aside>
           </div>
         )}
-        {tab === "map" && (
-          <>
-            <p className="map-help">
-              {t(
-                "Numbered stops follow your timeline. Food options in this area are also shown; they are suggestions, not reservations.",
-                "编号与时间线一致。同时显示本地区的美食备选，并非已预订餐厅。",
-              )}
-            </p>
-            <PlaceMap places={dayPlaces} />
-          </>
-        )}
+        {tab === "map" && <PlaceMap places={dayPlaces} />}
         {tab === "food" && <FoodCards area={day.area} />}{" "}
         {tab === "notes" && (
           <section className="notes-editor">

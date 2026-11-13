@@ -47,3 +47,15 @@ Import this GitHub repository in Vercel. Choose Vite; build command `npm run bui
 ## Visual assets
 
 `public/images/otaru-winter.jpg` is an AI-generated editorial winter canal scene inspired by Otaru, created with the built-in image generation tool, not documentary photography. The generation prompt is in `docs/hero-prompt.md`. UI icons use Lucide. No runtime image service is required.
+
+## Installable app and offline preview
+
+Japan 2026 includes a PWA manifest, home-screen icons, standalone display, safe-area spacing and bilingual installation instructions under **More**. Android Chrome can show an Install button when supported. On iPhone/iPad, open in Safari and use Share → Add to Home Screen (enable Open as Web App when offered).
+
+To test the actual service worker locally, run `npm run build`, then `npm run preview -- --port 4173` and open http://localhost:4173/more. The regular Vite development server intentionally does not enable offline caching, so development updates do not become stuck behind a worker.
+
+Keep the app online until More reports that the offline copy is saved (roughly 12 MB). The app shell, bundled photos, itinerary, accommodation and flight data are precached, including deep links not previously visited. Google Maps scripts/tiles, external websites and APIs are never cached by our worker and require internet. Browser storage may be cleared or evicted; reopen online before travel. Personal expenses and checklists remain in this device's local storage, with no automatic cross-device sync.
+
+Updates wait for the user to choose **Update now**; **Later** preserves the current session. Finish any unsaved form before updating. Registration checks again on a subsequent visible visit or reconnect. Vercel serves the worker/manifest directly with revalidation; no production deployment is needed to test locally.
+
+`npm run test:pwa` checks the built manifest/icons, full photo and app-asset cache coverage, deep-link fallback, hosting routes, and explicit update activation. Run it after `npm run build`.
