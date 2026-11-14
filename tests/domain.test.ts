@@ -162,3 +162,51 @@ test("storage failures propagate rather than reporting successful saves", async 
     /Quota exceeded/,
   );
 });
+
+test("CNY settlements convert before splitting and allocate every cent", () => {
+  const s = expenseSummary(
+    [expense({ amount: 100 })],
+    initialTravellers,
+    "CNY",
+  );
+  assert.equal(s.currency, "CNY");
+  assert.equal(s.total, 4.76);
+  assert.deepEqual(
+    s.balances.map((b) => b.owed),
+    [1.59, 1.59, 1.58],
+  );
+  assert.deepEqual(s.settlements, [
+    { from: people[1], to: people[0], amount: 1.59 },
+    { from: people[2], to: people[0], amount: 1.58 },
+  ]);
+});
+test("mixed-currency CNY settlement clears weighted balances with no lost cents", () => {
+  const input = [
+    expense({ amount: 10001 }),
+    expense({ id: "cny", amount: 100.01, currency: "CNY", paidBy: people[1] }),
+    expense({
+      id: "nzd",
+      amount: 12.34,
+      currency: "NZD",
+      paidBy: people[2],
+      participantIds: people.slice(0, 2),
+      shares: { [people[0]]: 1, [people[1]]: 3 },
+    }),
+  ];
+  const s = expenseSummary(input, initialTravellers, "CNY");
+  const paid = s.balances.reduce((n, b) => n + Math.round(b.paid * 100), 0);
+  const owed = s.balances.reduce((n, b) => n + Math.round(b.owed * 100), 0);
+  assert.equal(paid, owed);
+  const remaining = new Map(
+    s.balances.map((b) => [b.id, Math.round(b.net * 100)]),
+  );
+  for (const transfer of s.settlements) {
+    assert.equal(Math.round(transfer.amount * 100) / 100, transfer.amount);
+    const cents = Math.round(transfer.amount * 100);
+    remaining.set(transfer.from, remaining.get(transfer.from)! + cents);
+    remaining.set(transfer.to, remaining.get(transfer.to)! - cents);
+  }
+  assert.deepEqual([...remaining.values()], [0, 0, 0]);
+  assert.equal(input[0].currency, "JPY");
+  assert.equal(input[1].amount, 100.01);
+});

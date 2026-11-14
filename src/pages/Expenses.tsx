@@ -161,7 +161,7 @@ export function Expenses() {
         { replace: true },
       );
   }
-  const summary = expenseSummary(expenses, travellers);
+  const summary = expenseSummary(expenses, travellers, "CNY");
   const filtered = expenses
     .filter(
       (e) =>
@@ -568,19 +568,19 @@ export function Expenses() {
                 {summary.balances.map((b) => (
                   <div className="balance-row" key={b.id}>
                     <strong>{b.displayName}</strong>
-                    <span>{money(b.paid)}</span>
-                    <span>{money(b.owed)}</span>
+                    <span>{money(b.paid, "CNY", lang)}</span>
+                    <span>{money(b.owed, "CNY", lang)}</span>
                     <strong className={b.net > 0 ? "positive" : ""}>
                       {b.net > 0 ? "+" : ""}
-                      {money(b.net)}
+                      {money(b.net, "CNY", lang)}
                     </strong>
                   </div>
                 ))}
               </div>
               <p className="muted small-copy">
                 {t(
-                  "Positive balances receive money; negative balances pay. All figures above are in JPY.",
-                  "正数表示应收，负数表示应付。以上金额均为日元。",
+                  "Positive balances receive money; negative balances pay. All figures above are in CNY.",
+                  "正数表示应收，负数表示应付。以上金额均为人民币。",
                 )}
               </p>
             </>
@@ -589,7 +589,7 @@ export function Expenses() {
             <>
               <div className="section-heading">
                 <h2>{t("A simple way to settle", "轻松结清")}</h2>
-                <span>JPY</span>
+                <span>CNY · {t("Chinese yuan", "人民币")}</span>
               </div>
               <div className="panel settlement-list">
                 {summary.settlements.map((s, i) => (
@@ -598,7 +598,7 @@ export function Expenses() {
                     <strong>{name(s.from)}</strong>
                     <ArrowRight size={20} />
                     <strong>{name(s.to)}</strong>
-                    <b>{money(s.amount)}</b>
+                    <b>{money(s.amount, "CNY", lang)}</b>
                   </div>
                 ))}
                 {!summary.settlements.length && (
@@ -638,7 +638,8 @@ export function Expenses() {
               </div>
               <div className="expense-total-values">
                 <strong>
-                  {money(summary.total, "JPY", lang)} <small>JPY</small>
+                  {money(convertedExpenseTotal(expenses, "JPY"), "JPY", lang)}{" "}
+                  <small>JPY</small>
                 </strong>
                 <div className="expense-total-cny">
                   <span>{t("Approx. in Chinese yuan", "折合人民币")}</span>

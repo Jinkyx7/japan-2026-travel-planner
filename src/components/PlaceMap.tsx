@@ -1,17 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import { MapPin, ArrowUpRight, Utensils } from "lucide-react";
+import { MapPin, ArrowUpRight } from "lucide-react";
 import type { Place } from "../types";
 import { loadGoogleMaps } from "../services/googleMapsLoader";
 import { useApp } from "./AppContext";
 import { MapsLink, PlaceName } from "./UI";
+import { mapMarkerKind, mapMarkerSvg } from "../lib/mapMarkers";
+import { MapMarkerIcon } from "./MapMarkerIcon";
+import {
+  mapFilters,
+  matchesMapFilters,
+  toggleMapFilter,
+  type MapFilterSelection,
+} from "../lib/mapFilters";
 export function PlaceMap({
   places,
   numbered = true,
+  filters,
+  onFiltersChange,
+  showFilters = true,
 }: {
   places: Place[];
   numbered?: boolean;
+  filters?: MapFilterSelection;
+  onFiltersChange?: (filters: MapFilterSelection) => void;
+  showFilters?: boolean;
 }) {
   const { lang, t } = useApp();
+  const [localFilters, setLocalFilters] = useState<MapFilterSelection>([]);
+  const activeFilters = filters ?? localFilters;
+  const visiblePlaces = places.filter((p) =>
+    matchesMapFilters(p, activeFilters),
+  );
   const ref = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string>();
   const [online, setOnline] = useState(navigator.onLine);
@@ -148,7 +167,7 @@ export function PlaceMap({
     const map = mapRef.current;
     if (!initialized || !map) return;
     const order = new Map(places.map((p, i) => [p.id, i + 1]));
-    const points = places.filter((p) => p.coordinates);
+    const points = visiblePlaces.filter((p) => p.coordinates);
     const ids = new Set(points.map((p) => p.id));
     for (const [id, entry] of markersRef.current) {
       if (!ids.has(id)) {
@@ -160,10 +179,17 @@ export function PlaceMap({
     const bounds = new google.maps.LatLngBounds();
     points.forEach((p) => {
       bounds.extend(p.coordinates!);
-      const food = p.category === "restaurant";
-      const title = `${lang === "en" ? (food ? "Food" : "Stop") : food ? "美食" : "地点"}: ${lang === "en" ? p.nameEn : p.nameZh}`;
-      const label = numbered ? String(order.get(p.id)) : food ? "" : "•";
-      const appearance = `${food}:${label}`;
+      const food = p.category === "restaurant" || p.category === "cafe";
+      const kind = mapMarkerKind(p.category);
+      const label = numbered ? order.get(p.id) : undefined;
+      const type =
+        lang === "en"
+          ? { food: "Food", stay: "Stay", stop: "Stop", airport: "Airport" }[
+              kind
+            ]
+          : { food: "美食", stay: "住宿", stop: "地点", airport: "机场" }[kind];
+      const title = `${type}${label ? ` ${label}` : ""}: ${lang === "en" ? p.nameEn : p.nameZh}`;
+      const appearance = `${kind}:${label ?? ""}`;
       let entry = markersRef.current.get(p.id);
       if (!entry) {
         const pin = document.createElement("div");
@@ -197,16 +223,8 @@ export function PlaceMap({
       }
       if (entry.appearance !== appearance) {
         entry.marker.zIndex = food ? 100 : 1;
-        entry.pin.className = "place-marker" + (food ? " food-marker" : "");
-        entry.pin.replaceChildren();
-        if (food)
-          entry.pin.innerHTML =
-            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v19M20 22V3c-4 3-4 9 0 9"/></svg>';
-        if (label) {
-          const text = document.createElement("span");
-          text.textContent = label;
-          entry.pin.append(text);
-        }
+        entry.pin.className = `place-marker marker-${kind}`;
+        entry.pin.innerHTML = mapMarkerSvg(kind, label);
         entry.appearance = appearance;
       }
     });
@@ -227,22 +245,60 @@ export function PlaceMap({
       }
       viewportKeyRef.current = viewportKey;
     }
-  }, [initialized, places, lang, numbered]);
+  }, [initialized, places, lang, numbered, visiblePlaces]);
 
   useEffect(() => {
     for (const [id, entry] of markersRef.current)
       entry.pin.classList.toggle("selected-map-marker", id === selected);
-  }, [initialized, selected, places, lang, numbered]);
-  const current = places.find((p) => p.id === selected);
+  }, [initialized, selected, places, lang, numbered, visiblePlaces]);
+  const current = visiblePlaces.find((p) => p.id === selected);
   return (
     <section className="map-panel" aria-label={t("Places map", "地点地图")}>
-      <div
-        ref={ref}
-        className="google-map"
-        role="region"
-        aria-label={t("Interactive places map", "互动地点地图")}
-        style={{ display: state === "fallback" ? "none" : "block" }}
-      />
+      {showFilters && (
+        <div
+          className="chips map-filters"
+          role="group"
+          aria-label={t(
+            "Filter by place type (select multiple)",
+            "按地点类型筛选（可多选）",
+          )}
+        >
+          {mapFilters.map((option) => {
+            const active =
+              option.id === "all"
+                ? !activeFilters.length
+                : activeFilters.includes(option.id);
+            return (
+              <button
+                key={option.id}
+                aria-pressed={active}
+                className={active ? "active" : ""}
+                onClick={() =>
+                  (onFiltersChange ?? setLocalFilters)(
+                    toggleMapFilter(activeFilters, option.id),
+                  )
+                }
+              >
+                {t(option.en, option.zh)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      <div className="map-stage">
+        <div
+          ref={ref}
+          className="google-map"
+          role="region"
+          aria-label={t("Interactive places map", "互动地点地图")}
+          style={{ display: state === "fallback" ? "none" : "block" }}
+        />
+        {state === "loading" && (
+          <div className="map-loading">
+            {t("Loading map…", "正在加载地图…")}
+          </div>
+        )}
+      </div>
       {state === "fallback" && (
         <div className="map-fallback">
           <div className="map-pattern" aria-hidden="true" />
@@ -259,45 +315,31 @@ export function PlaceMap({
             </p>
           </div>
           <div className="map-stops">
-            {places.map((p, i) => (
+            {visiblePlaces.map((p) => (
               <button
                 key={p.id}
                 className={selected === p.id ? "selected" : ""}
                 onClick={() => setSelected(p.id)}
               >
-                <span
-                  className={
-                    "pin-number" +
-                    (p.category === "restaurant" ? " food-marker" : "")
-                  }
-                >
-                  {p.category === "restaurant" && <Utensils size={13} />}
-                  {numbered ? (
-                    i + 1
-                  ) : p.category !== "restaurant" ? (
-                    <MapPin size={12} />
-                  ) : null}
-                </span>
+                <MapMarkerIcon
+                  kind={mapMarkerKind(p.category)}
+                  number={numbered ? places.indexOf(p) + 1 : undefined}
+                  className="map-list-marker"
+                />
                 {lang === "en" ? p.nameEn : p.nameZh}
               </button>
             ))}
           </div>
-          {!places.length && (
+          {!visiblePlaces.length && (
             <p>
-              {t(
-                "No places planned in this area yet.",
-                "此地区暂无已规划地点。",
-              )}
+              {t("No places match these filters.", "当前筛选条件下没有地点。")}
             </p>
           )}
         </div>
       )}
-      {state === "loading" && (
-        <div className="map-loading">{t("Loading map…", "正在加载地图…")}</div>
-      )}
-      {!places.length && (
+      {!visiblePlaces.length && state !== "fallback" && (
         <p className="map-help">
-          {t("No places planned in this area yet.", "此地区暂无已规划地点。")}
+          {t("No places match these filters.", "当前筛选条件下没有地点。")}
         </p>
       )}
       {current && (
@@ -309,10 +351,12 @@ export function PlaceMap({
                 {
                   attraction: "景点",
                   restaurant: "餐厅",
+                  cafe: "咖啡与甜点",
                   shopping: "购物",
                   hotel: "住宿",
                   station: "车站",
                   transport: "交通",
+                  airport: "机场",
                   photo: "摄影",
                 }[current.category],
               )}
@@ -328,22 +372,30 @@ export function PlaceMap({
       )}
       <div className="map-legend">
         <span>
-          <MapPin size={15} />
-          {t("Activities & other stops", "活动与其他地点")}
+          <MapMarkerIcon kind="stop" className="legend-marker" />
+          {t("Things to do", "景点与游玩")}
         </span>
         <span className="food-legend">
-          <Utensils size={15} />
+          <MapMarkerIcon kind="food" className="legend-marker" />
           {t("Food & cafés", "美食与咖啡")}
+        </span>
+        <span className="airport-legend">
+          <MapMarkerIcon kind="airport" className="legend-marker" />
+          {t("Airports", "机场")}
+        </span>
+        <span className="stay-legend">
+          <MapMarkerIcon kind="stay" className="legend-marker" />
+          {t("Accommodation", "住宿")}
         </span>
       </div>
       <div className="map-caption">
         <span>
           <MapPin size={13} />
-          {places.length} {t("places", "个地点")}
+          {visiblePlaces.length} {t("places", "个地点")}
         </span>
         <a
           href={
-            places[0]?.googleMapsUrl ??
+            visiblePlaces[0]?.googleMapsUrl ??
             "https://www.google.com/maps/search/?api=1&query=Hokkaido+Japan"
           }
           target="_blank"

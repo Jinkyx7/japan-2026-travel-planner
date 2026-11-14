@@ -34,12 +34,11 @@ test("flight timeline references preserve airport dates and distinct Narita term
   assert.equal(itinerary.at(-1)?.pending, undefined);
 });
 
-test("overnight return and outbound dates remain explicit rather than Japan-time conversions", () => {
-  assert.equal(flightById["wnz-pvg"].arrival.date, "2027-01-09");
-  assert.equal(flightById["pvg-akl"].departure.date, "2027-01-10");
-  assert.equal(flightById["pvg-akl"].departure.time, "00:10");
+test("flight list ends in Wenzhou and omits the later Auckland return", () => {
   assert.deepEqual(
-    flights.filter((f) => f.yearInferred).map((f) => f.id),
-    ["wnz-pvg", "pvg-akl"],
+    flights.map((f) => f.id),
+    ["pvg-cts", "cts-nrt", "nrt-pvg", "pvg-wnz"],
   );
+  assert.equal(flightById["wnz-pvg"], undefined);
+  assert.equal(flightById["pvg-akl"], undefined);
 });

@@ -16,7 +16,7 @@ Open the URL printed by Vite. `npm run build` performs a strict TypeScript check
 
 ## Maps
 
-Embedded maps use Google Maps JavaScript API and the same ordered place IDs as the timeline, with separate food icons. Add `VITE_GOOGLE_MAPS_API_KEY` to `.env.local` and restart Vite; configure the same variable in Vercel before deploying. Restrict the browser key to your development/production website URLs and the required APIs. `VITE_GOOGLE_MAPS_MAP_ID` is optional (defaults to Google's demo map ID).
+Embedded maps use Google Maps JavaScript API and the same ordered place IDs as the timeline. Numbered markers use a serving-dish silhouette for food, a house for accommodation and a pin for other stops; numbers sit inside each shape. The same SVGs appear in the offline list and legend. Add `VITE_GOOGLE_MAPS_API_KEY` to `.env.local` and restart Vite; configure the same variable in Vercel before deploying. Restrict the browser key to your development/production website URLs and the required APIs. `VITE_GOOGLE_MAPS_MAP_ID` is optional (defaults to Google's demo map ID).
 
 The SDK is shared across panels. Each mounted panel keeps one map and reuses markers as filters or language change; language and selection preserve zoom/pan. Desktop wheel zoom is direct, while touch devices use cooperative gestures so the page remains scrollable. Initial tile loading and authorization failures fall back to the places list and outbound Google Maps links. Browser keys are visible in client code; never commit `.env.local`.
 
@@ -25,12 +25,13 @@ The SDK is shared across panels. Each mounted panel keeps one map and reuses mar
 - Eleven day itinerary, with curated English / Chinese / Japanese place names.
 - Confirmed shuttle information, flight details, Otaru timeline, guided tour and switchable December 24 plans.
 - Tokyo December 26–29 intentionally left unplanned.
-- Food filters, maps, shared places, shopping by product or place, and daily notes.
+- Maps filter by region and allow multiple place types together: food/cafés, things to do, accommodation and airports. All types resets the category selection. Things to do includes shopping and ground transport. Numbered yellow rice bowls, houses and airplane silhouettes distinguish the main categories. Shopping supports product/place views; daily notes are local.
 - Editable expenses with original JPY/NZD/CNY amounts, payer and participant selection, filters, totals and settlement suggestions.
 - Expenses can link to a stay or itinerary stop. Member-only details and timeline badges show payers and recorded payments; paid-in-full status is explicit, so deposits aren't mistaken for completed bills.
 - Total trip spending shows both JPY and an approximate CNY equivalent using the shared manual rates, with CNY calculated directly from original-currency payments.
 - Member-only shared expenses and traveller names, with email/password login and password changes under More.
 - Accessible forms and native modal dialog, responsive layout, desktop navigation and mobile bottom navigation.
+- Mobile bottom navigation prioritizes Home, Itinerary, Map and Expenses; Food and Shopping are available under More.
 
 ## Data and persistence
 
@@ -44,7 +45,7 @@ Shopping checklists and daily notes still use this browser's local storage with 
 
 The schema migration is in `supabase/migrations/`. Seed the personal email allowlist through trusted administration, not a committed migration. `supabase/tests/member_access.sql` verifies member CRUD, validation, optimistic updates, guest/nonmember isolation and revocation in a rolled-back transaction. See `docs/shared-ledger.md` for setup and verification details.
 
-Rates in `src/data/exchangeRates.ts` are illustrative manual settings (JPY base, NZD 90, CNY 21). Confirm and edit them before settling. Conversion rounds each transaction to whole base-currency yen; largest-remainder allocation ensures shares sum to the converted amount. The model supports weighted custom shares; the V1 form uses equal shares. Settlement suggestions do not send payments.
+Rates in `src/data/exchangeRates.ts` are illustrative manual settings (JPY base, NZD 90, CNY 21). Confirm and edit them before settling. Member balances and settlement suggestions use CNY: each original-currency transaction is converted directly to integer cents, then largest-remainder allocation ensures shares sum to the converted amount. Trip totals independently show JPY and CNY, rounding only the final display totals. The model supports weighted custom shares; the V1 form uses equal shares. Settlement suggestions do not send payments.
 
 Trip progress uses Japan's calendar date. Timetable estimates, unconfirmed activities and unspecified return times are labeled rather than invented. No booking codes or private contact details are included. Accommodation pins represent the supplied public hotel or general area, not private addresses. Restaurant ratings/prices are omitted when unverified.
 

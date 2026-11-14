@@ -10,8 +10,7 @@ export function money(n: number, c: Currency = "JPY", lang = "en") {
   }).format(n);
 }
 export function convertedExpenseTotal(expenses: Expense[], currency: Currency) {
-  // Convert original amounts directly; the JPY settlement rounds each transaction
-  // to whole yen and would introduce extra rounding if reused for CNY totals.
+  // Convert original amounts directly and round only the final display total.
   const total = expenses.reduce(
     (sum, expense) =>
       sum +
@@ -22,12 +21,22 @@ export function convertedExpenseTotal(expenses: Expense[], currency: Currency) {
   const scale = 10 ** currencyDigits(currency);
   return Math.round((total + Number.EPSILON) * scale) / scale;
 }
-export function expenseSummary(expenses: Expense[], travellers: Traveller[]) {
+export function expenseSummary(
+  expenses: Expense[],
+  travellers: Traveller[],
+  currency: Currency = "JPY",
+) {
+  // Allocate integer minor units (cents for CNY) so transfers balance exactly.
+  const scale = 10 ** currencyDigits(currency);
   const totals: Record<Currency, number> = { JPY: 0, NZD: 0, CNY: 0 };
   const balances = travellers.map((t) => ({ ...t, paid: 0, owed: 0, net: 0 }));
   for (const e of expenses) {
     totals[e.currency] += e.amount;
-    const amount = Math.round(e.amount * exchangeRates.rates[e.currency]);
+    const amount = Math.round(
+      ((e.amount * exchangeRates.rates[e.currency]) /
+        exchangeRates.rates[currency]) *
+        scale,
+    );
     const payer = balances.find((t) => t.id === e.paidBy);
     if (payer) payer.paid += amount;
     const participants = e.participantIds;
@@ -68,8 +77,14 @@ export function expenseSummary(expenses: Expense[], travellers: Traveller[]) {
     }
   return {
     totals,
-    balances,
-    settlements,
-    total: balances.reduce((sum, t) => sum + t.paid, 0),
+    currency,
+    balances: balances.map((t) => ({
+      ...t,
+      paid: t.paid / scale,
+      owed: t.owed / scale,
+      net: t.net / scale,
+    })),
+    settlements: settlements.map((s) => ({ ...s, amount: s.amount / scale })),
+    total: balances.reduce((sum, t) => sum + t.paid, 0) / scale,
   };
 }

@@ -3124,29 +3124,29 @@ textarea {
   font-size: 18px;
 }
 .place-marker {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 34px;
-  height: 34px;
-  padding: 0 7px;
-  border: 2px solid white;
-  border-radius: 18px 18px 18px 4px;
-  background: #2f6b5b;
-  color: white;
-  box-shadow: 0 2px 5px #0004;
-  font: 600 13px system-ui;
+  display: block;
+  width: 36px;
+  height: 40px;
+  filter: drop-shadow(0 2px 2px #0004);
+  transform-origin: center bottom;
+  cursor: pointer;
 }
-.food-marker {
-  background: #994d24 !important;
-  color: white;
+.place-marker > svg,
+.marker-icon > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-.pin-number.food-marker {
-  width: auto;
-  min-width: 30px;
-  padding: 0 6px;
-  gap: 3px;
+.marker-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 29px;
+}
+.marker-icon.legend-marker {
+  width: 20px;
+  height: 22px;
 }
 .map-legend {
   display: flex;
@@ -3501,8 +3501,11 @@ textarea {
 }
 
 .selected-map-marker {
-  outline: 3px solid #d7b46a;
-  outline-offset: 3px;
+  transform: scale(1.12);
+}
+.selected-map-marker .marker-shape {
+  stroke: #d7b46a;
+  stroke-width: 3;
 }
 
 /* Installed apps respect notches and the home indicator in either orientation. */
@@ -3641,4 +3644,15 @@ textarea {
   .header-inner {
     height: 65px;
   }
+}
+
+.map-filters {
+  padding: 16px;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.map-stage {
+  position: relative;
 }

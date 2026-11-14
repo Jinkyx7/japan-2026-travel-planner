@@ -11,10 +11,12 @@ export type Place = {
   category:
     | "attraction"
     | "restaurant"
+    | "cafe"
     | "shopping"
     | "hotel"
     | "station"
     | "transport"
+    | "airport"
     | "photo";
   area: Area;
   coordinates?: { lat: number; lng: number };

@@ -35,10 +35,6 @@ const end = (
   time,
   zone,
 });
-const unspecified = l(
-  "Baggage allowance is not shown in the supplied document; check your airline booking.",
-  "所提供文件未列出行李额度，请查看航司预订。",
-);
 // Booking-document schedules, not live flight status. Passenger identifiers omitted.
 export const flights: Flight[] = [
   {
@@ -191,72 +187,6 @@ export const flights: Flight[] = [
       ),
     ],
     notes: [l("Economy · connecting from MU524.", "经济舱 · 衔接MU524。")],
-  },
-  {
-    id: "wnz-pvg",
-    number: "FM9524",
-    airline: l("Shanghai Airlines", "上海航空"),
-    departure: end(
-      "WNZ",
-      "Wenzhou Longwan",
-      "温州龙湾",
-      "Terminal 2",
-      "第2航站楼",
-      "2027-01-09",
-      "21:05",
-      "CST · UTC+8",
-    ),
-    arrival: end(
-      "PVG",
-      "Shanghai Pudong",
-      "上海浦东",
-      "Terminal 1",
-      "第1航站楼",
-      "2027-01-09",
-      "22:30",
-      "CST · UTC+8",
-    ),
-    baggage: [unspecified],
-    yearInferred: true,
-    notes: [
-      l(
-        "Economy · 1 h 40 min until MU779 at 00:10 the next day. Through-check baggage is not specified.",
-        "经济舱 · 中转1小时40分钟，次日00:10衔接MU779。文件未说明行李是否直挂。",
-      ),
-    ],
-  },
-  {
-    id: "pvg-akl",
-    number: "MU779",
-    airline: l("China Eastern Airlines", "中国东方航空"),
-    departure: end(
-      "PVG",
-      "Shanghai Pudong",
-      "上海浦东",
-      "Terminal 1",
-      "第1航站楼",
-      "2027-01-10",
-      "00:10",
-      "CST · UTC+8",
-    ),
-    arrival: end(
-      "AKL",
-      "Auckland",
-      "奥克兰",
-      "International",
-      "国际航站楼",
-      "2027-01-10",
-      "16:35",
-      "NZDT · UTC+13",
-    ),
-    baggage: [unspecified],
-    yearInferred: true,
-    notes: [
-      l(
-        "Economy · midnight departure: go to the airport on the evening of 9 January.",
-        "经济舱 · 凌晨起飞：需于1月9日晚抵达机场。",
-      ),
-    ],
   },
 ];
 export const flightById = Object.fromEntries(

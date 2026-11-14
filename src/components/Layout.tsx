@@ -99,7 +99,9 @@ export function Layout() {
         aria-label={t("Mobile navigation", "手机导航")}
       >
         {[
-          ...navigation.slice(0, 4),
+          ...navigation.filter(
+            (item) => item.to !== "/food" && item.to !== "/shopping",
+          ),
           { to: "/more", en: "More", zh: "更多", icon: Menu },
         ].map((n) => (
           <NavLink key={n.to} end={n.to === "/"} to={n.to}>
@@ -150,7 +152,9 @@ export function More() {
       {session && member && <ChangePassword />}
       <div className="panel menu-list">
         {[
-          ...navigation.slice(4),
+          ...navigation.filter(
+            (item) => item.to === "/food" || item.to === "/shopping",
+          ),
           {
             to: "/accommodation",
             en: "Accommodation",

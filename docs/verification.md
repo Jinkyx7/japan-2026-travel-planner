@@ -90,3 +90,39 @@ Added local destination photography with source/license credits, contextual stop
 - Added a separately labelled CNY reference total alongside JPY. It converts original expense amounts using the existing manual rate table and rounds to cents, avoiding reuse of whole-yen settlement rounding. A synthetic regression case and existing accounting tests passed. All 21 domain checks and 4 PWA checks passed with a strict production build.
 - Payer badges center their nickname; the member's current shared display name is Jinky. Actual expenses and account credentials remain outside the source repository. Only browser-safe Supabase URL/publishable configuration is supplied to the production build.
 - The existing `js-studio3 / japan-2026-travel-planner` project and `main` repository branch are the release targets. This release includes the previously reviewed shared-ledger, password-login and linked-payment features.
+
+## Mobile expense navigation and category marker shapes — local changes
+
+- Mobile bottom navigation now contains Home, Itinerary, Map, Expenses and More. Food and Shopping are listed in More; desktop navigation retains all its existing destinations.
+- Food markers use a serving dish/cloche silhouette, accommodation markers a house and other stops a pin. The ordered place number is rendered inside each SVG. Removed the separate cutlery glyph and reused the marker SVG across Google Maps, offline lists, the places list and legend. Food-only maps now include numbers too. Selection follows the SVG outline rather than drawing a rectangular ring.
+- All 23 domain checks and 4 PWA checks passed with a strict production build. Added coverage for numbering across day/plan/category combinations and safe numeric SVG labels. The existing map instance/marker reuse and viewport logic are preserved.
+- Browser validation was not run: the automatic browser approval service rejected the previous production-origin navigation because its usage allowance was exhausted. No alternate browser or network path was used to bypass that rejection. The static SVG preview is generated directly from the same local marker renderer, not a live map screenshot.
+- These navigation and marker changes have not been committed, pushed or deployed. The previous production release `2d4d88f` is READY and includes the CNY spending total; its live-browser check remains unverified for the same approval-service reason.
+
+## Map type filters, CNY settlement and itinerary cleanup — 14 November 2026
+
+- Added region-compatible filters for food, attractions/photos, stays, airports, shopping and other transport on Explore and daily maps. The map, caption, selection card and Explore list filter together; numbers retain their original position. Airports have their own category and numbered airplane pins in the map, list and legend.
+- Member balances and transfer suggestions now calculate directly in CNY cents with largest-remainder allocation, including mixed currencies and custom participant weights. Original amounts remain unchanged. Trip totals still show JPY and approximate CNY using the existing manual rate table.
+- Removed the overview payment badge from daily itinerary pages; member-only badges remain in the timeline. Removed the Wenzhou–Shanghai FM9524 and Shanghai–Auckland MU779 entries and their January date text. Four Japan-related flight legs remain.
+- Strict TypeScript/Vite production build and 26 domain checks plus four built-PWA checks passed. Browser checks confirmed food-only markers/list, region/category combinations, no-results state, airport pin selection, daily map filters, CNY transfers and dual totals. DOM inspection found zero overview payment badges and the paid badge still inside the timeline. Flight page lists only 9C8791, GK124, MU524 and FM9527.
+- Browser approval access is working again following the user's Codex usage reset; the previous local feature's browser-verification limitation is superseded. These changes are local only; no commit, push or deployment.
+
+## Multi-select map categories and simpler silhouettes — 14 November 2026
+
+- Replaced the airport pin-plus-icon with a single airplane silhouette containing its number. Food/café pins now use yellow burger silhouettes with dark numbers for contrast. The same SVGs appear in Google Maps, fallback lists, Explore rows and legends.
+- Simplified categories to All types, Food, Cafés & desserts, Things to do, Accommodation and Airports. Shopping, stations and other ground transport belong to Things to do; LeTAO is explicitly classified as café/dessert. Any specific categories can be combined; All types clears them, and removing the final specific category returns to All.
+- Browser verified Food + Cafés + Accommodation across all regions (eight places), café removal alone (seven), All reset (38), and Food + Accommodation in Sapporo (four). Checked airplane and burger silhouettes on the live local Google map. Category controls remain native buttons with aria-pressed and a multi-select group label; numbering remains stable through category changes.
+- Strict TypeScript/production build, 28 domain checks and four built-PWA checks passed. New cases cover union selection, deselection, reset and merged categories. Changes remain local; no commit, push or deployment.
+
+## Combined food/cafe filter and marker choice preview — 14 November 2026
+
+- Combined meals and café/dessert places into one Food & cafés toggle. Multi-select with accommodation, airports and Things to do remains available; All types still resets the selection.
+- Updated the existing filter cases; 28 domain checks, strict TypeScript and the production build passed. Browser confirmed the single food filter shows GARAKU, Shingen, Sankaku Market and LeTAO together across all regions.
+- Prepared four yellow numbered alternatives (plate, rice bowl, serving dish and coffee cup) as a standalone local comparison image. The current burger remains until the user chooses. No commit, push or deployment.
+
+## Rice bowl marker and production release preparation — 14 November 2026
+
+- Applied the user's selected rice-bowl design to all food/cafe markers, using yellow fill, dark internal numbers and chopsticks. Shared map/list/fallback/legend rendering remains consistent.
+- Release scope includes the reviewed mobile expense navigation, combined multi-select map filters, food/house/airplane marker shapes, CNY member settlement with JPY/CNY trip totals, timeline-only payment badges and removal of the two later Auckland-return flight legs.
+- Target is the existing js-studio3 / japan-2026-travel-planner production project, from the main branch. No backend/schema or environment changes are needed for this release.
+- Pre-release validation passed: 28 domain tests, four built-PWA checks and strict TypeScript/Vite build. Local Google Maps rendered the chosen numbered rice bowls alongside accommodation markers with both filters active.

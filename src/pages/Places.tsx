@@ -7,6 +7,9 @@ import { places } from "../data/places";
 import { restaurants } from "../data/restaurants";
 import { areaNames } from "../data/trip";
 import type { Area } from "../types";
+import { MapMarkerIcon } from "../components/MapMarkerIcon";
+import { mapMarkerKind } from "../lib/mapMarkers";
+import { matchesMapFilters, type MapFilterSelection } from "../lib/mapFilters";
 export function AreaFilter({
   area,
   setArea,
@@ -44,7 +47,7 @@ export function FoodCards({ area = "All" }: { area?: string }) {
         return (
           <article key={r.id} className="restaurant-card">
             <div className={"food-symbol food-" + r.id}>
-              {r.id === "letao" ? (
+              {p.category === "cafe" ? (
                 <Coffee size={30} strokeWidth={1.3} />
               ) : (
                 <Utensils size={30} strokeWidth={1.3} />
@@ -122,7 +125,7 @@ export function Food() {
         )}
       />
       <AreaFilter area={area} setArea={setArea} />
-      <PlaceMap places={points} numbered={false} />
+      <PlaceMap places={points} showFilters={false} />
       <div className="section-heading">
         <h2>{t("Something to look forward to", "值得期待的美味")}</h2>
         <span>
@@ -136,6 +139,7 @@ export function Food() {
 export function MapPage() {
   const { t } = useApp();
   const [area, setArea] = useState("Sapporo");
+  const [filters, setFilters] = useState<MapFilterSelection>([]);
   const points = Object.values(places).filter(
     (p) => p.id !== "pvg" && (area === "All" || p.area === area),
   );
@@ -150,17 +154,27 @@ export function MapPage() {
         )}
       />
       <AreaFilter area={area} setArea={setArea} />
-      <PlaceMap places={points} />
+      <PlaceMap
+        places={points}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
       <div className="place-grid">
-        {points.map((p, i) => (
-          <article className="place-row" key={p.id}>
-            <span className="pin-number">{i + 1}</span>
-            <div>
-              <PlaceName place={p} all />
-            </div>
-            <MapsLink place={p} />
-          </article>
-        ))}
+        {points
+          .filter((p) => matchesMapFilters(p, filters))
+          .map((p) => (
+            <article className="place-row" key={p.id}>
+              <MapMarkerIcon
+                kind={mapMarkerKind(p.category)}
+                number={points.indexOf(p) + 1}
+                className="map-list-marker"
+              />
+              <div>
+                <PlaceName place={p} all />
+              </div>
+              <MapsLink place={p} />
+            </article>
+          ))}
       </div>
     </>
   );

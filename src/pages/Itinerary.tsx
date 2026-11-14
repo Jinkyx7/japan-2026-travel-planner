@@ -206,12 +206,6 @@ function DayContent({ day }: { day: (typeof itinerary)[number] }) {
               <ChevronRight size={14} />
             </Link>
           )}
-          {stay && !linked.error && !linked.loading && (
-            <PaymentBadge
-              targetId={stayExpenseId(stay)}
-              expenses={linked.expenses}
-            />
-          )}
           {day.items.some((item) => item.plan) && (
             <div className="plan-switch">
               {["A", "B"].map((p) => (
